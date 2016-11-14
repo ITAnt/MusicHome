@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.andexert.library.RippleView;
 import com.itant.musichome.R;
 
 /**
@@ -16,7 +15,7 @@ import com.itant.musichome.R;
  */
 public class BaseActivity extends Activity {
 
-    private RippleView rv_back;
+    private RelativeLayout rl_back;
     private TextView tv_title;
 
     @Override
@@ -24,8 +23,8 @@ public class BaseActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
 
-        rv_back = (RippleView) findViewById(R.id.rv_back);
-        rv_back.setOnClickListener(new View.OnClickListener() {
+        rl_back = (RelativeLayout) findViewById(R.id.rl_back);
+        rl_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -51,9 +50,9 @@ public class BaseActivity extends Activity {
 
     public void setBackable(boolean backable) {
         if (backable) {
-            rv_back.setVisibility(View.VISIBLE);
+            rl_back.setVisibility(View.VISIBLE);
         } else {
-            rv_back.setVisibility(View.GONE);
+            rl_back.setVisibility(View.GONE);
         }
     }
 }

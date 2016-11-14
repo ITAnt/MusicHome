@@ -11,9 +11,8 @@
         android:background="@color/colorPrimary">
 
 
-        <com.andexert.library.RippleView
-            android:id="@+id/rv_back"
-            rv_centered="true"
+        <RelativeLayout
+            android:id="@+id/rl_back"
             android:layout_width="40dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="5dp"
@@ -25,7 +24,7 @@
                 android:layout_centerInParent="true"
                 android:scaleType="fitXY"
                 android:src="@mipmap/back" />
-        </com.andexert.library.RippleView>
+        </RelativeLayout>
 
 
         <TextView

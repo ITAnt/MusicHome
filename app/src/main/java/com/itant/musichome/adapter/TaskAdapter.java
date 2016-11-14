@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.dinuscxj.progressbar.CircleProgressBar;
 import com.itant.musichome.R;
 import com.itant.musichome.bean.Music;
 
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * Created by Jason on 2016/11/13.
  */
-public class MusicAdapter extends BaseAdapter {
+public class TaskAdapter extends BaseAdapter {
     private Context context;
     private List<Music> musics;
 
@@ -23,7 +24,7 @@ public class MusicAdapter extends BaseAdapter {
         this.musics = musics;
     }
 
-    public MusicAdapter(Context context, List<Music> musics) {
+    public TaskAdapter(Context context, List<Music> musics) {
         this.context = context;
         this.musics = musics;
     }
@@ -48,12 +49,13 @@ public class MusicAdapter extends BaseAdapter {
         Music music = musics.get(position);
 
         if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.adapter_music, null);
+            convertView = LayoutInflater.from(context).inflate(R.layout.adapter_task, null);
             viewHolder = new ViewHolder();
             viewHolder.tv_name = (TextView) convertView.findViewById(R.id.tv_name);
             viewHolder.tv_size = (TextView) convertView.findViewById(R.id.tv_size);
             viewHolder.tv_bitrate = (TextView) convertView.findViewById(R.id.tv_bitrate);
             viewHolder.tv_singer = (TextView) convertView.findViewById(R.id.tv_singer);
+            viewHolder.cpb_task = (CircleProgressBar) convertView.findViewById(R.id.cpb_task);
 
             convertView.setTag(viewHolder);
         } else {
@@ -62,7 +64,8 @@ public class MusicAdapter extends BaseAdapter {
 
         viewHolder.tv_name.setText(music.getName());
         viewHolder.tv_bitrate.setText(music.getBitrate());
-        viewHolder.tv_singer.setText(music.getSinger() + " " +music.getAlbum());
+        viewHolder.tv_singer.setText(music.getSinger() + " " + music.getAlbum());
+        viewHolder.cpb_task.setProgress(music.getProgress());
 
         return convertView;
     }
@@ -73,5 +76,6 @@ public class MusicAdapter extends BaseAdapter {
         private TextView tv_size;
         private TextView tv_bitrate;
         private TextView tv_singer;
+        private CircleProgressBar cpb_task;
     }
 }

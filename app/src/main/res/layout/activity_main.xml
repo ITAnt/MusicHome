@@ -1,141 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/colorPrimary">
-
-        <com.andexert.library.RippleView
-            android:id="@+id/rv_about"
-            rv_centered="true"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="5dp">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_centerInParent="true"
-                android:scaleType="fitXY"
-                android:src="@mipmap/about" />
-        </com.andexert.library.RippleView>
-
-        <com.andexert.library.RippleView
-            android:layout_toRightOf="@+id/rv_about"
-            rv_centered="true"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-
-            android:layout_marginRight="5dp">
-
-            <ImageView
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_centerInParent="true"
-                android:scaleType="fitXY"
-                android:src="@mipmap/download" />
-        </com.andexert.library.RippleView>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="音乐之家"
-            android:textColor="@color/white"
-            android:textSize="@dimen/size_title" />
-
-
-
-    </RelativeLayout>
-
-    <LinearLayout
+    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin">
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary">
+
+            <RelativeLayout
+                android:id="@+id/rl_about"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerInParent="true"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/about" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl_task"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="5dp"
+                android:layout_toRightOf="@+id/rl_about">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_centerInParent="true"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/download" />
+            </RelativeLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="音乐之家"
+                android:textColor="@color/white"
+                android:textSize="@dimen/size_title" />
+
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:layout_marginBottom="5dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin">
 
-            <EditText
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginBottom="15dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/et_key"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/shape_edittext_radius"
+                    android:gravity="center_vertical"
+                    android:hint="请输入关键字"
+                    android:padding="5dp"
+                    android:textSize="12sp" />
+
+                <com.beardedhen.androidbootstrap.BootstrapButton
+                    android:id="@+id/bb_search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:text="搜索"
+                    app:bootstrapBrand="success"
+                    app:bootstrapSize="sm"
+                    app:buttonMode="regular"
+                    app:roundedCorners="true"
+                    app:showOutline="false" />
+            </LinearLayout>
+
+
+            <RadioGroup
+                android:id="@+id/rg_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rb_dog"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="小狗"
+                    android:textColor="@color/gray"
+                    android:textSize="13sp" />
+
+                <RadioButton
+                    android:id="@+id/rb_xia"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="龙虾"
+                    android:textColor="@color/gray"
+                    android:textSize="13sp" />
+
+                <RadioButton
+                    android:id="@+id/rb_qie"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="企鹅"
+                    android:textColor="@color/gray"
+                    android:textSize="13sp" />
+
+                <RadioButton
+                    android:id="@+id/rb_yun"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="白云"
+                    android:textColor="@color/gray"
+                    android:textSize="13sp" />
+            </RadioGroup>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/gray" />
+
+            <ListView
+                android:id="@+id/lv_music"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="@drawable/shape_edittext_radius"
-                android:padding="5dp" />
+                android:scrollbars="none"></ListView>
 
-            <com.beardedhen.androidbootstrap.BootstrapButton
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:text="搜索"
-                app:bootstrapBrand="success"
-                app:bootstrapSize="sm"
-                app:buttonMode="regular"
-                app:roundedCorners="true"
-                app:showOutline="false" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/gray" />
         </LinearLayout>
-
-
-
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="5dp">
-            <RadioButton
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="小狗"/>
-
-            <RadioButton
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="龙虾"/>
-
-            <RadioButton
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="企鹅"/>
-
-            <RadioButton
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="白云"/>
-        </RadioGroup>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/bootstrap_gray_light"/>
-
-        <ListView
-            android:id="@+id/lv_music"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:scrollbars="none">
-        </ListView>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/bootstrap_gray_light"/>
     </LinearLayout>
-</LinearLayout>
+
+    <!--加载中-->
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/avliv_loading"
+        style="@style/AVLoadingIndicatorView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:indicatorColor="@color/colorPrimary"
+        app:indicatorName="PacmanIndicator"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
+</FrameLayout>
