@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -84,8 +85,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             boolean granted = grantResult == PackageManager.PERMISSION_GRANTED;
 
             if (!granted) {
-                ToastTools.toastShort(this, "应用没有足够的权限");
-                System.exit(0);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastTools.toastShort(MainActivity.this, "应用没有足够的权限");
+                        System.exit(0);
+                    }
+                }, 3000);
             }
         }
     }
@@ -113,6 +119,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         musicAdapter = new MusicAdapter(this, musics);
         lv_music.setAdapter(musicAdapter);
         lv_music.setOnItemClickListener(this);
+        musicAdapter.setOnDownloadClickListener(new MusicAdapter.OnDownloadClickListener() {
+            @Override
+            public void onIconClick(int position) {
+                onDownloadClick(musics.get(position));
+            }
+        });
 
         rl_about = (RelativeLayout) findViewById(R.id.rl_about);
         rl_about.setOnClickListener(this);
@@ -191,12 +203,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            moveTaskToBack(false);// true对任何Activity都适用
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
+    public void onBackPressed() {
+        super.onBackPressed();
+        moveTaskToBack(true);// true对任何Activity都适用
     }
 
     @Override
@@ -275,7 +284,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        final Music music = musics.get(position);
+        Music music = musics.get(position);
+        onDownloadClick(music);
+    }
+
+    private void onDownloadClick(final Music music) {
         if (TextUtils.isEmpty(music.getMp3Url())) {
             ToastTools.toastShort(this, "没有相应的下载地址");
             return;
@@ -326,7 +339,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         if (!TextUtils.isEmpty(url)) {
                             music.setMp3Url(url);
                             try {
-                                MusicApplication.db.save(music);
+                                MusicApplication.db.update(music, "mp3Url");
                             } catch (DbException e) {
                                 e.printStackTrace();
                             }
@@ -369,6 +382,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void downloadMusic(final Music music) {
+
+
         org.xutils.http.RequestParams params = new org.xutils.http.RequestParams(music.getMp3Url());
         params.setAutoResume(true);
         params.setAutoRename(false);

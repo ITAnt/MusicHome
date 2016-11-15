@@ -83,7 +83,7 @@ public class DogMusic {
                     music.setId(object.getString("hash"));// 歌曲ID
                     music.setName(object.getString("filename"));// 歌名
                     music.setSinger(object.getString("singername"));// 歌手
-                    music.setAlbum("无");// 专辑
+                    music.setAlbum("");// 专辑
 
 
                     music.setBitrate(object.getString("bitrate"));// 音质

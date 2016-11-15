@@ -13,30 +13,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginRight="5dp">
-        <LinearLayout
+
+        <TextView
+            android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-            <TextView
-                android:id="@+id/tv_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="16sp"
-                android:textColor="@color/colorPrimaryDark"/>
-
-            <TextView
-                android:id="@+id/tv_bitrate"
-                android:layout_marginLeft="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:textSize="12sp"
-                android:background="@drawable/shape_textview_radius"/>
-        </LinearLayout>
+            android:text=""
+            android:textSize="16sp"
+            android:textColor="@color/colorPrimaryDark"/>
 
         <TextView
             android:id="@+id/tv_singer"
@@ -52,7 +36,7 @@
     <LinearLayout
         android:id="@+id/ll_download"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_alignParentRight="true"
         android:gravity="center">
@@ -69,5 +53,15 @@
             android:layout_height="wrap_content"
             android:textSize="10sp"
             android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_bitrate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="未知"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textSize="10sp"
+            android:background="@drawable/shape_textview_radius"/>
     </LinearLayout>
 </LinearLayout>

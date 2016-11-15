@@ -21,31 +21,25 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:text=""
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp" />
 
-                <TextView
-                    android:id="@+id/tv_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_bitrate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:background="@drawable/shape_textview_radius"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:text=""
-                    android:textSize="12sp" />
-            </LinearLayout>
+            <TextView
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:id="@+id/tv_bitrate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_textview_radius"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text=""
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/tv_singer"

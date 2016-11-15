@@ -4,39 +4,26 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.beardedhen.androidbootstrap.BootstrapAlert;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.dinuscxj.progressbar.CircleProgressBar;
 import com.itant.musichome.MusicApplication;
 import com.itant.musichome.R;
-import com.itant.musichome.adapter.MusicAdapter;
-import com.itant.musichome.adapter.TaskAdapter;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.utils.ToastTools;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
-import org.xutils.DbManager;
-import org.xutils.common.util.KeyValue;
-import org.xutils.db.sqlite.WhereBuilder;
-import org.xutils.db.table.DbModel;
 import org.xutils.ex.DbException;
-import org.xutils.x;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -110,7 +97,8 @@ public class TaskActivity extends BaseActivity {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_task, parent, false);
+            // inflate方法的第二个参数一定要为null，否则只能显示第一行
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_task, null, false);
             return new ViewHolder(view);
         }
 
@@ -210,6 +198,7 @@ public class TaskActivity extends BaseActivity {
             private CircleProgressBar cpb_task;
             private ImageView iv_play;
             private ImageView iv_delete;
+
             public ViewHolder(View itemView) {
                 super(itemView);
 

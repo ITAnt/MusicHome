@@ -104,7 +104,7 @@ public class QieMusic {
                             singer1 = singer1 + "、" + singer2;
                         }
                         music.setSinger(singer1);// 歌手
-                        music.setAlbum("无");// 专辑
+                        music.setAlbum("");// 专辑
                         music.setMp3Url(infos[infos.length-4]);// 下载地址
 
                         music.setFileName(music.getName() + "-" + music.getSinger() + ".m4a");// 文件名
