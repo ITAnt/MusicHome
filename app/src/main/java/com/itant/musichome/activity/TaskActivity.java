@@ -1,7 +1,10 @@
 package com.itant.musichome.activity;
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -132,6 +135,15 @@ public class TaskActivity extends BaseActivity {
                     File file = new File(music.getFilePath());
                     if (!file.exists()) {
                         ToastTools.toastShort(getApplicationContext(), "该文件已丢失，请从列表中删除");
+                    }
+
+                    // 播放
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setDataAndType(Uri.parse("file://" + music.getFilePath()), "audio/MP3");
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        ToastTools.toastShort(getApplicationContext(), "找不到文件");
                     }
                 }
             });

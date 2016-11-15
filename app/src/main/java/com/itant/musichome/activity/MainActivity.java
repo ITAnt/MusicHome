@@ -165,10 +165,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      * 初始化文件夹目录
      */
     private void initDirectory() {
-        Constants.PATH_DOG = Constants.PATH_DOWNLOAD + "/dog/";
-        Constants.PATH_XIA = Constants.PATH_DOWNLOAD + "/xia/";
-        Constants.PATH_QIE = Constants.PATH_DOWNLOAD + "/qie/";
-        Constants.PATH_YUN = Constants.PATH_DOWNLOAD + "/yun/";
+        Constants.PATH_DOG = Constants.PATH_DOWNLOAD + "dog/";
+        Constants.PATH_XIA = Constants.PATH_DOWNLOAD + "xia/";
+        Constants.PATH_QIE = Constants.PATH_DOWNLOAD + "qie/";
+        Constants.PATH_YUN = Constants.PATH_DOWNLOAD + "yun/";
         File file = new File(Constants.PATH_DOG);
         if (!file.exists()) {
             file.mkdirs();
