@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
@@ -16,10 +15,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.itant.musichome.MusicApplication;
@@ -27,17 +24,20 @@ import com.itant.musichome.R;
 import com.itant.musichome.adapter.MusicAdapter;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
+import com.itant.musichome.music.DogMusic;
+import com.itant.musichome.music.QieMusic;
 import com.itant.musichome.utils.ToastTools;
 import com.wang.avi.AVLoadingIndicatorView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.xutils.common.Callback;
 import org.xutils.ex.DbException;
-import org.xutils.http.RequestParams;
 import org.xutils.x;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, RadioGroup.OnCheckedChangeListener, AdapterView.OnItemClickListener {
@@ -220,17 +220,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     return;
                 }
 
+                // 加载中
+                if (musics != null) {
+                    musics.clear();
+                }
+                musicAdapter.notifyDataSetChanged();
                 avliv_loading.show();
+
                 switch (index) {
                     case 0:
                         // 搜索小狗
+                        DogMusic.getInstance().getDogSongs(musics, keyWords);
                         break;
                     case 1:
                         // 搜索龙虾
                         break;
                     case 2:
                         // 搜索企鹅
-                        getQieSongs();
+                        QieMusic.getInstance().getQieSongs(musics, keyWords);
                         break;
                     case 3:
                         // 搜索白云
@@ -274,33 +281,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             return;
         }
 
-        org.xutils.http.RequestParams params = new org.xutils.http.RequestParams(music.getMp3Url());
-        params.setAutoResume(true);
-        params.setAutoRename(false);
-        switch (index) {
-            case 0:
-                params.setSaveFilePath(Constants.PATH_DOG + music.getFileName());
-                break;
-
-            case 1:
-                params.setSaveFilePath(Constants.PATH_XIA + music.getFileName());
-                break;
-
-            case 2:
-                params.setSaveFilePath(Constants.PATH_QIE + music.getFileName());
-                break;
-
-            case 3:
-                params.setSaveFilePath(Constants.PATH_YUN + music.getFileName());
-                break;
-
-            default:
-                params.setSaveFilePath(Constants.PATH_DOG + music.getFileName());
-                break;
+        File localFile = new File(music.getFilePath());
+        if (localFile.exists()) {
+            ToastTools.toastShort(this, "该歌曲已下载完成");
+            return;
         }
-
-        params.setExecutor(Constants.EXECUTOR_MUSIC);
-        params.setCancelFast(true);
 
         try {
             Music dbMusic = MusicApplication.db.selector(Music.class).where("id", "=", music.getId()).findFirst();
@@ -321,11 +306,87 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         ToastTools.toastShort(getApplicationContext(), "已将" + music.getFileName() + "添加到下载列表");
 
-        Callback.Cancelable cancelable = x.http().get(params, new Callback.ProgressCallback<File>() {
+        switch (music.getMusicType()) {
+            case 0:
+                // 小狗，步骤多一步，必须先获取真正的下载地址
+                org.xutils.http.RequestParams params = new org.xutils.http.RequestParams(music.getMp3Url());
+                params.setExecutor(Constants.EXECUTOR_MUSIC);
+                params.setCancelFast(true);
+
+                x.http().get(params, new Callback.CommonCallback<String>() {
+
+                    @Override
+                    public void onSuccess(String result) {
+                        JSONObject jsonObject = JSON.parseObject(result);
+                        if (jsonObject == null) {
+                            return;
+                        }
+
+                        String url = jsonObject.getString("url");
+                        if (!TextUtils.isEmpty(url)) {
+                            music.setMp3Url(url);
+                            try {
+                                MusicApplication.db.save(music);
+                            } catch (DbException e) {
+                                e.printStackTrace();
+                            }
+                            downloadMusic(music);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable ex, boolean isOnCallback) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(CancelledException cex) {
+
+                    }
+
+                    @Override
+                    public void onFinished() {
+
+                    }
+                });
+                break;
+
+            case 1:
+
+                break;
+
+            case 2:
+                // 企鹅，直接下
+                downloadMusic(music);
+                break;
+
+            case 3:
+
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void downloadMusic(final Music music) {
+        org.xutils.http.RequestParams params = new org.xutils.http.RequestParams(music.getMp3Url());
+        params.setAutoResume(true);
+        params.setAutoRename(false);
+        params.setSaveFilePath(music.getFilePath());
+        params.setExecutor(Constants.EXECUTOR_MUSIC);
+        params.setCancelFast(true);
+
+        x.http().get(params, new Callback.ProgressCallback<File>() {
 
             @Override
             public void onSuccess(File result) {
                 ToastTools.toastShort(getApplicationContext(), music.getFileName() + "下载成功啦");
+                music.setProgress(100);
+                try {
+                    MusicApplication.db.update(music, "progress");
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -340,14 +401,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
             @Override
             public void onFinished() {
-                // 将任务放从集合中移除
-                //Constants.MUSIC_TASKS.remove(music.getId());
-                music.setProgress(100);
-                try {
-                    MusicApplication.db.update(music, "progress");
-                } catch (DbException e) {
-                    e.printStackTrace();
-                }
+
             }
 
             @Override
@@ -362,163 +416,41 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
             @Override
             public void onLoading(long total, long current, boolean isDownloading) {
-
-                //int progress = (int)(current*100/total);
-
-            }
-        });
-
-        // 将当前任务放进集合
-        //Constants.MUSIC_TASKS.put(music.getId(), cancelable);
-    }
-    /**
-     * 获取企鹅歌曲信息
-     */
-    private void getQieSongs() {
-        String url = "http://soso.music.qq.com/fcgi-bin/music_search_new_platform?t=0&n=20&g_tk=157256710&loginUin=584586119&hostUin=0&format=jsonp&inCharset=GB2312&outCharset=utf-8&notice=0&platform=newframe&jsonpCallback=jsnp_callback&needNewCode=0&w=" + keyWords + "&p=0&catZhida=1&remoteplace=sizer.newclient.song_all&searchid=11040987310239770213&clallback=jsnp_callback&lossless=0";
-        RequestParams params = new RequestParams(url);
-        x.http().get(params, new Callback.CommonCallback<String>() {
-
-            @Override
-            public void onSuccess(String result) {
-                String json = result.substring(result.indexOf("{"), result.lastIndexOf(")"));
-                if (TextUtils.isEmpty(json)) {
-                    return;
+                // 更新进度
+                int progress = (int) (current * 100 / total);
+                music.setProgress(progress);
+                try {
+                    MusicApplication.db.update(music, "progress");
+                } catch (DbException e) {
+                    e.printStackTrace();
                 }
-
-                JSONObject jsonObject = JSON.parseObject(json);
-                if (jsonObject == null) {
-                    return;
-                }
-
-                JSONObject dataObject = jsonObject.getJSONObject("data");
-                if (dataObject == null) {
-                    return;
-                }
-
-                JSONObject songObject = dataObject.getJSONObject("song");
-                if (songObject == null) {
-                    return;
-                }
-
-                String totalNum = songObject.getString("totalnum");
-                if (TextUtils.equals(totalNum, "0")) {
-                    return;
-                }
-
-                JSONArray listArray = songObject.getJSONArray("list");
-                if (listArray == null) {
-                    return;
-                }
-
-                if (musics != null) {
-                    musics.clear();
-                }
-
-                for (Object obj : listArray) {
-                    JSONObject object = JSON.parseObject(obj.toString());
-                    if (object == null) {
-                        continue;
-                    }
-                    String isWeiYun = object.getString("isweiyun");
-                    if (TextUtils.equals(isWeiYun, "1")) {
-                        continue;
-                    }
-
-                    String f = object.getString("f");
-                    if (TextUtils.isEmpty(f)) {
-                        continue;
-                    }
-
-                    Music music = new Music();
-                    // 音乐的唯一ID
-                    music.setId(String.valueOf(System.currentTimeMillis()));
-                    if (f.contains("@@")) {
-                        music.setBitrate("128");
-                        String[] infos = f.split("@@");
-                        if (infos == null) {
-                            continue;
-                        }
-                        music.setId(infos[0].trim());// 歌曲ID
-                        music.setName(infos[1].trim());// 歌名
-                        String singer1 = object.getString("fsinger");
-                        String singer2 = object.getString("fsinger2");
-                        if (!TextUtils.isEmpty(singer2)) {
-                            singer1 = singer1 + "、" + singer2;
-                        }
-                        music.setSinger(singer1);// 歌手
-                        music.setAlbum("无");// 专辑
-                        music.setMp3Url(infos[infos.length-4]);// 下载地址
-
-                        music.setFileName(music.getName() + "-" + music.getSinger() + ".m4a");// 文件名
-                    } else {
-                        String[] infos = f.split("\\|");
-                        if (infos == null) {
-                            continue;
-                        }
-                        music.setId(infos[0].trim());// 歌曲ID
-                        music.setName(object.getString("fsong"));// 歌名
-                        String singer1 = object.getString("fsinger");
-                        String singer2 = object.getString("fsinger2");
-                        if (!TextUtils.isEmpty(singer2)) {
-                            singer1 = singer1 + "、" + singer2;
-                        }
-                        music.setSinger(singer1);// 歌手
-                        music.setAlbum(infos[5]);// 专辑
-
-                        music.setBitrate("128");
-                        try {
-                            // 低音质下载地址
-                            music.setMp3Url("http://tsmusic128.tc.qq.com/" + (Integer.parseInt(music.getId()) + 30000000) + ".mp3");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        if (f.contains("320000|0|")) {
-                            // 高音质下载地址
-                            music.setBitrate("320");
-                            music.setMp3Url("http://vsrc.music.tc.qq.com/M800" + infos[infos.length-5] + ".mp3");
-
-                            if (!f.contains("320000|0|0|")) {
-                                // 无损音质下载地址
-                                music.setBitrate("无损");
-                                music.setMp3Url("http://vsrc.music.tc.qq.com/F000" + infos[infos.length-5] + ".flac");
-                            }
-                        }
-
-                        String suffix = music.getMp3Url().substring(music.getMp3Url().lastIndexOf("."), music.getMp3Url().length());
-                        music.setFileName(music.getName() + "-" + music.getSinger() + suffix);// 文件名
-
-                        // 音乐相册
-                        try {
-                            music.setImageUrl("http://imgcache.qq.com/music/photo/album/" + (Integer.parseInt(infos[4]) % 100) + "/albumpic_" + infos[4] + "_0.jpg");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    musics.add(music);
-                }
-
-                musicAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
-
-            @Override
-            public void onFinished() {
-                avliv_loading.hide();
             }
         });
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(String event) {
+        if (TextUtils.equals(event, Constants.EVENT_LOAD_COMPLETE)) {
+            // 停止加载动画
+            avliv_loading.hide();
+        }
+
+        if (TextUtils.equals(event, Constants.EVENT_UPDATE_MUSICS)) {
+            // 刷新音乐列表
+            musicAdapter.notifyDataSetChanged();
+        }
+    }
 
 }

@@ -38,4 +38,16 @@ public class Constants {
     public static Executor EXECUTOR_MUSIC = new PriorityExecutor(5, true);
 
     //public static Map<String, Cancelable> MUSIC_TASKS;
+
+    /**
+     * 停止加载动画
+     */
+    public static final String EVENT_LOAD_COMPLETE = "load_finish";
+
+    /**
+     *  刷新搜索界面的音乐列表
+     */
+    public static final String EVENT_UPDATE_MUSICS = "update_music";
+
+
 }

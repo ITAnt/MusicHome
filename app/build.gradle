@@ -49,4 +49,10 @@ dependencies {
 
     /*请求和下载*/
     /*compile 'com.koushikdutta.async:androidasync:2.+'*/
+
+    /*EventBus*/
+    compile 'org.greenrobot:eventbus:3.0.0'
+
+    /*上拉加载更多*/
+    compile 'com.wuxiaolong.pullloadmorerecyclerview:library:1.1.1'
 }

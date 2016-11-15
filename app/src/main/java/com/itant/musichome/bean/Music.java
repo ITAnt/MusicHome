@@ -8,8 +8,6 @@ import org.xutils.db.annotation.Table;
  */
 @Table(name = "music")
 public class Music {
-    /*@Column(name = "id", isId = true)
-    private String id;// 本地文件的ID*/
 
     @Column(name = "id", isId = true)
     private String id;// 歌曲的ID
@@ -40,6 +38,12 @@ public class Music {
 
     @Column(name = "progress")
     private int progress;// 下载进度
+
+    @Column(name = "filePath")
+    private String filePath;// 本地文件路径
+
+    @Column(name = "musicType")
+    private int musicType;// 音乐来源 0小狗、1龙虾、2企鹅、3白云
 
     public String getName() {
         return name;
@@ -119,5 +123,21 @@ public class Music {
 
     public void setProgress(int progress) {
         this.progress = progress;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public int getMusicType() {
+        return musicType;
+    }
+
+    public void setMusicType(int musicType) {
+        this.musicType = musicType;
     }
 }

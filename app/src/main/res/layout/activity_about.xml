@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:padding="@dimen/activity_horizontal_margin"
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@mipmap/ic_launcher"
+        android:scaleType="fitXY"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:id="@+id/tv_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/gray"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="音乐之家"
-        android:textColor="@color/bootstrap_gray"
-        android:layout_centerInParent="true"/>
-</RelativeLayout>
+        android:text="1.程序还在测试中，请尽量下载完一首歌曲之后再进行下载。\r\n\r\n2.无论是WiFi还是流量环境下都会进行下载，下载之前请注意您的流量情况。\r\n\r\n3.更多资讯，欢迎到我的微博留言，我的微博是：竹翎子歌。"
+        android:textSize="12sp"
+        android:textColor="@color/gray"/>
+</LinearLayout>

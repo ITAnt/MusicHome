@@ -1,6 +1,7 @@
 package com.itant.musichome;
 
 import android.app.Application;
+import android.content.Context;
 import android.os.Environment;
 
 import com.itant.musichome.common.Constants;
@@ -16,10 +17,13 @@ import java.io.File;
 public class MusicApplication extends Application {
 
     public static DbManager db;
+    public static Context applicationContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        applicationContext = getApplicationContext();
+
         x.Ext.init(this);
         x.Ext.setDebug(BuildConfig.DEBUG); // 是否输出debug日志, 开启debug会影响性能.
 
