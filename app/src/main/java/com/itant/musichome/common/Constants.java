@@ -21,9 +21,9 @@ public class Constants {
     public static String PATH_DOG;
 
     /**
-     * 龙虾下载地址
+     * 凉窝下载地址
      */
-    public static String PATH_XIA;
+    public static String PATH_LWO;
 
     /**
      * 企鹅下载地址

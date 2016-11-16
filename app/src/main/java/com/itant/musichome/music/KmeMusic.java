@@ -20,17 +20,17 @@ import java.util.List;
 
 /**
  * Created by 詹子聪 on 2016/11/15.
- * 小狗音乐
+ * 凉窝音乐
  */
-public class DogMusic {
+public class KmeMusic {
 
-    private DogMusic() {}
+    private KmeMusic() {}
 
     private static class DogMusicFactory {
-        private static DogMusic instance = new DogMusic();
+        private static KmeMusic instance = new KmeMusic();
     }
 
-    public static DogMusic getInstance() {
+    public static KmeMusic getInstance() {
         return DogMusicFactory.instance;
     }
 
@@ -44,10 +44,6 @@ public class DogMusic {
 
             @Override
             public void onSuccess(String result) {
-                if (TextUtils.isEmpty(result)) {
-                    return;
-                }
-
                 String json = result.substring(result.indexOf("{"), result.lastIndexOf(")"));
                 if (TextUtils.isEmpty(json)) {
                     return;
@@ -83,6 +79,7 @@ public class DogMusic {
 
                     Music music = new Music();
                     music.setMusicType(0);// 音乐来源
+                    music.setSinger("未知");// 歌手
                     music.setId(object.getString("hash"));// 歌曲ID
                     music.setName(object.getString("filename"));// 歌名
                     music.setSinger(object.getString("singername"));// 歌手
@@ -90,7 +87,7 @@ public class DogMusic {
 
 
                     music.setBitrate(object.getString("bitrate"));// 音质
-                    music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getId() + ".mp3");// 文件名
+                    music.setFileName(music.getName() + "-" + music.getSinger() + ".mp3");// 文件名
 
                     String hash = object.getString("hash");
                     String hash320 = object.getString("320hash");

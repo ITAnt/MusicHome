@@ -41,6 +41,10 @@ public class QieMusic {
 
             @Override
             public void onSuccess(String result) {
+                if (TextUtils.isEmpty(result)) {
+                    return;
+                }
+
                 String json = result.substring(result.indexOf("{"), result.lastIndexOf(")"));
                 if (TextUtils.isEmpty(json)) {
                     return;
@@ -144,7 +148,7 @@ public class QieMusic {
                         }
 
                         String suffix = music.getMp3Url().substring(music.getMp3Url().lastIndexOf("."), music.getMp3Url().length());
-                        music.setFileName(music.getName() + "-" + music.getSinger() + suffix);// 文件名
+                        music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getId() + suffix);// 文件名
 
                         // 音乐相册
                         try {

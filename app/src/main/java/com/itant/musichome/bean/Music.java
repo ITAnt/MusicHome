@@ -43,7 +43,7 @@ public class Music {
     private String filePath;// 本地文件路径
 
     @Column(name = "musicType")
-    private int musicType;// 音乐来源 0小狗、1龙虾、2企鹅、3白云
+    private int musicType;// 音乐来源 0小狗、1凉窝、2企鹅、3白云
 
     public String getName() {
         return name;

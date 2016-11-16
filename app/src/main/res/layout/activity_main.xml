@@ -113,11 +113,11 @@
                     android:textSize="13sp" />
 
                 <RadioButton
-                    android:id="@+id/rb_xia"
+                    android:id="@+id/rb_lwo"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="龙虾"
+                    android:text="凉窝"
                     android:textColor="@color/gray"
                     android:textSize="13sp" />
 

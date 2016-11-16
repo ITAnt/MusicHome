@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -27,6 +26,7 @@ import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
 import com.itant.musichome.music.DogMusic;
 import com.itant.musichome.music.QieMusic;
+import com.itant.musichome.music.YunMusic;
 import com.itant.musichome.utils.ToastTools;
 import com.wang.avi.AVLoadingIndicatorView;
 
@@ -55,7 +55,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private RelativeLayout rl_about;
     private RelativeLayout rl_task;
 
-    private int index = 0;// 0小狗 1龙虾 2企鹅 3白云
+    private int index = 0;// 0小狗 1凉窝 2企鹅 3白云
     private String keyWords;// 搜索的关键字，一般为歌曲名
     private EditText et_key;
 
@@ -138,39 +138,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         bb_search.setOnClickListener(this);
 
         avliv_loading = (AVLoadingIndicatorView) findViewById(R.id.avliv_loading);
-
-
-        /*RequestParams params = new RequestParams("http://music.163.com/api/search/pc");
-        params.addBodyParameter("offset", "0");
-        params.addBodyParameter("total", "true");
-        params.addBodyParameter("limit", "50");
-        params.addBodyParameter("type", "1");
-        params.addBodyParameter("s", "残酷月光");
-        params.addHeader("Cookie", "os=pc;MUSIC_U=5339640232");
-
-
-        x.http().post(params, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                Toast.makeText(x.app(), result, Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                Toast.makeText(x.app(), ex.getMessage(), Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-                Toast.makeText(x.app(), "cancelled", Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onFinished() {
-
-            }
-        });*/
-
     }
 
     /**
@@ -178,7 +145,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      */
     private void initDirectory() {
         Constants.PATH_DOG = Constants.PATH_DOWNLOAD + "dog/";
-        Constants.PATH_XIA = Constants.PATH_DOWNLOAD + "xia/";
+        Constants.PATH_LWO = Constants.PATH_DOWNLOAD + "lwo/";
         Constants.PATH_QIE = Constants.PATH_DOWNLOAD + "qie/";
         Constants.PATH_YUN = Constants.PATH_DOWNLOAD + "yun/";
         File file = new File(Constants.PATH_DOG);
@@ -186,7 +153,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             file.mkdirs();
         }
 
-        file = new File(Constants.PATH_XIA);
+        file = new File(Constants.PATH_LWO);
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -242,7 +209,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         DogMusic.getInstance().getDogSongs(musics, keyWords);
                         break;
                     case 1:
-                        // 搜索龙虾
+                        // 搜索凉我
                         break;
                     case 2:
                         // 搜索企鹅
@@ -250,6 +217,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         break;
                     case 3:
                         // 搜索白云
+                        YunMusic.getInstance().getYunSongs(musics, keyWords);
                         break;
                     default:
                         // 搜索小狗
@@ -267,7 +235,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.rb_dog:
                 index = 0;
                 break;
-            case R.id.rb_xia:
+            case R.id.rb_lwo:
                 index = 1;
                 break;
             case R.id.rb_qie:
@@ -374,7 +342,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
 
             case 3:
-
+                // 白云，直接下
+                downloadMusic(music);
                 break;
             default:
                 break;
