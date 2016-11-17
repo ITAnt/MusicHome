@@ -27,6 +27,7 @@ import com.itant.musichome.common.Constants;
 import com.itant.musichome.music.DogMusic;
 import com.itant.musichome.music.QieMusic;
 import com.itant.musichome.music.YunMusic;
+import com.itant.musichome.utils.SecureTool;
 import com.itant.musichome.utils.ToastTools;
 import com.wang.avi.AVLoadingIndicatorView;
 
@@ -38,6 +39,7 @@ import org.xutils.ex.DbException;
 import org.xutils.x;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,6 +140,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         bb_search.setOnClickListener(this);
 
         avliv_loading = (AVLoadingIndicatorView) findViewById(R.id.avliv_loading);
+
     }
 
     /**

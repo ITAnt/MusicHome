@@ -1,23 +1,21 @@
 package com.itant.musichome.music;
 
 import android.text.TextUtils;
+import android.util.Base64;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.itant.musichome.MusicApplication;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
-import com.itant.musichome.utils.SecureTool;
-import com.itant.musichome.utils.ToastTools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -26,7 +24,8 @@ import java.util.List;
  */
 public class YunMusic {
 
-    private YunMusic() {}
+    private YunMusic() {
+    }
 
     private static class YunMusicFactory {
         private static YunMusic instance = new YunMusic();
@@ -64,7 +63,6 @@ public class YunMusic {
                 if (resultObject == null) {
                     return;
                 }
-
 
 
                 JSONArray listArray = resultObject.getJSONArray("songs");
@@ -143,20 +141,24 @@ public class YunMusic {
                     }
 
 
-
+                    String url = "";
                     try {
-                        byte[] bytes = "3go8&$8*3*3h0k(2)2".getBytes("US-ASCII");
-                        byte[] buffer = dfsId.getBytes("US-ASCII");
-                        for (int i = 0; i < buffer.length; i++) {
-                            buffer[i] = (byte) (buffer[i] ^ bytes[i % bytes.length]);
+                        String key = "3go8&$8*3*3h0k(2)2";
+                        byte[] keyBytes = key.getBytes();
+                        byte[] searchBytes = dfsId.getBytes();
+                        for (int i = 0; i < searchBytes.length; ++i) {
+                            searchBytes[i] ^= keyBytes[i % keyBytes.length];
                         }
-                        String source = SecureTool.getMD5String(buffer).replace('/', '_').replace('+', '-');
-                        encryptId = SecureTool.getBase64(source);
-                    } catch (UnsupportedEncodingException e) {
+                        MessageDigest mdInst = null;
+                        mdInst = MessageDigest.getInstance("MD5");
+                        mdInst.update(searchBytes);
+                        String params = Base64.encodeToString(mdInst.digest(), Base64.NO_WRAP);
+                        params = params.replace("+", "-");
+                        params = params.replace("/", "_");
+                        url = "http://m2.music.126.net/" + params + "/" + dfsId + "." + extension;
+                    } catch (NoSuchAlgorithmException e) {
                         e.printStackTrace();
                     }
-
-                    String url = "http://m2.music.126.net/"  + encryptId + "/" + dfsId + "." + extension;
 
                     music.setMp3Url(url);// 下载地址
                     music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getId() + ".mp3");// 文件名
