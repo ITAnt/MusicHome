@@ -1,5 +1,7 @@
 package com.itant.musichome.activity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 import com.itant.musichome.R;
 import com.itant.musichome.common.Constants;
 import com.itant.musichome.utils.ToastTools;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,14 +30,33 @@ import java.net.URL;
 /**
  * Created by Jason on 2016/11/13.
  */
-public class AboutActivity extends BaseActivity {
-    private TextView tv_content;
+public class AboutActivity extends BaseActivity implements View.OnClickListener {
+    private ClipboardManager clipboardManager;
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.tv_qq_qun:
+                ClipData clipData = ClipData.newPlainText("qq_group", "484111083");
+                //clipboardManager.setText("484111083");
+                clipboardManager.setPrimaryClip(clipData);
+                ToastTools.toastShort(AboutActivity.this, "已将QQ群号复制到剪贴板");
+                MobclickAgent.onEvent(this, "QQ");// 统计QQ群复制次数
+                break;
+            default:
+                break;
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitleBar("关于");
         setBackable(true);
+
+        clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        TextView tv_qq_qun = (TextView) findViewById(R.id.tv_qq_qun);
+        tv_qq_qun.setOnClickListener(this);
 
         TextView tv_version = (TextView) findViewById(R.id.tv_version);
         try{
@@ -57,6 +79,7 @@ public class AboutActivity extends BaseActivity {
                     saveMyBitmap("money.png", tmpBitmap);
                     insertIntoAlbum("money.png");
                     ToastTools.toastShort(getApplicationContext(), "图片保存成功");
+                    MobclickAgent.onEvent(AboutActivity.this, "Money");// 统计保存图片次数
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

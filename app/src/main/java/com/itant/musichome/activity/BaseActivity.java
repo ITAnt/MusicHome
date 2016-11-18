@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.itant.musichome.R;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * Created by Jason on 2016/11/13.
@@ -17,6 +18,15 @@ public class BaseActivity extends Activity {
 
     private RelativeLayout rl_back;
     private TextView tv_title;
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

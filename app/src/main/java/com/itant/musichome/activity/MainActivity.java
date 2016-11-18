@@ -25,10 +25,11 @@ import com.itant.musichome.adapter.MusicAdapter;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
 import com.itant.musichome.music.DogMusic;
+import com.itant.musichome.music.KmeMusic;
 import com.itant.musichome.music.QieMusic;
 import com.itant.musichome.music.YunMusic;
-import com.itant.musichome.utils.SecureTool;
 import com.itant.musichome.utils.ToastTools;
+import com.umeng.analytics.MobclickAgent;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -39,7 +40,6 @@ import org.xutils.ex.DbException;
 import org.xutils.x;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,7 +148,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      */
     private void initDirectory() {
         Constants.PATH_DOG = Constants.PATH_DOWNLOAD + "dog/";
-        Constants.PATH_LWO = Constants.PATH_DOWNLOAD + "lwo/";
+        Constants.PATH_KWO = Constants.PATH_DOWNLOAD + "lwo/";
         Constants.PATH_QIE = Constants.PATH_DOWNLOAD + "qie/";
         Constants.PATH_YUN = Constants.PATH_DOWNLOAD + "yun/";
         File file = new File(Constants.PATH_DOG);
@@ -156,7 +156,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             file.mkdirs();
         }
 
-        file = new File(Constants.PATH_LWO);
+        file = new File(Constants.PATH_KWO);
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -183,14 +183,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         switch (v.getId()) {
             case R.id.rl_about:
                 // 在父类做动画===================
+                MobclickAgent.onEvent(this, "About");// 统计关于
                 startActivity(new Intent(this, AboutActivity.class));
                 break;
 
             case R.id.rl_task:
+                MobclickAgent.onEvent(this, "Task");// 查看下载列表
                 startActivity(new Intent(this, TaskActivity.class));
                 break;
 
             case R.id.bb_search:
+                MobclickAgent.onEvent(this, "Search");// 统计搜索次数
                 // 收起软键盘并搜索
                 inputMethodManager.hideSoftInputFromWindow(et_key.getWindowToken(), 0); //强制隐藏键盘
                 keyWords = et_key.getText().toString();
@@ -209,17 +212,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 switch (index) {
                     case 0:
                         // 搜索小狗
+                        MobclickAgent.onEvent(this, "Dog");// 搜索小狗
                         DogMusic.getInstance().getDogSongs(musics, keyWords);
                         break;
                     case 1:
                         // 搜索凉我
+                        MobclickAgent.onEvent(this, "Kwo");// 统计凉窝
+                        KmeMusic.getInstance().getDogSongs(musics, keyWords);
                         break;
                     case 2:
                         // 搜索企鹅
+                        MobclickAgent.onEvent(this, "Qie");// 统计企鹅
                         QieMusic.getInstance().getQieSongs(musics, keyWords);
                         break;
                     case 3:
                         // 搜索白云
+                        MobclickAgent.onEvent(this, "Yun");// 统计白云
                         YunMusic.getInstance().getYunSongs(musics, keyWords);
                         break;
                     default:
@@ -255,6 +263,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        MobclickAgent.onEvent(this, "Download");// 统计下载次数
         Music music = musics.get(position);
         onDownloadClick(music);
     }
@@ -320,7 +329,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                     @Override
                     public void onError(Throwable ex, boolean isOnCallback) {
-
+                        ToastTools.toastShort(MainActivity.this, "这首歌不能下载了");
                     }
 
                     @Override
@@ -336,7 +345,40 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
 
             case 1:
+                // 凉窝
+                // 需要多一步，获取真正的mp3地址
+                org.xutils.http.RequestParams kmeParams = new org.xutils.http.RequestParams(music.getMp3Url());
+                kmeParams.setExecutor(Constants.EXECUTOR_MUSIC);
+                kmeParams.setCancelFast(true);
 
+                x.http().get(kmeParams, new Callback.CommonCallback<String>() {
+
+                            @Override
+                            public void onSuccess(String result) {
+                                music.setMp3Url(result.trim().replaceAll(" ", ""));
+                                try {
+                                    MusicApplication.db.update(music, "mp3Url");
+                                } catch (DbException e) {
+                                    e.printStackTrace();
+                                }
+                                downloadMusic(music);
+                            }
+
+                            @Override
+                            public void onError(Throwable ex, boolean isOnCallback) {
+                                ToastTools.toastShort(MainActivity.this, "这首歌不能下载了");
+                            }
+
+                            @Override
+                            public void onCancelled(CancelledException cex) {
+
+                            }
+
+                            @Override
+                            public void onFinished() {
+
+                            }
+                });
                 break;
 
             case 2:

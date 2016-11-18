@@ -5,6 +5,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
     <application
         android:name=".MusicApplication"
         android:allowBackup="true"
@@ -13,7 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/MusicTheme">
         <activity android:name=".activity.MainActivity"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,7 +26,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.itant.musichome.activity.AboutActivity"/>
-        <activity android:name="com.itant.musichome.activity.TaskActivity"/>
+        <activity
+            android:name="com.itant.musichome.activity.AboutActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.itant.musichome.activity.TaskActivity"
+            android:screenOrientation="portrait"/>
+
+        <meta-data android:value="582ec80a310c934e2a000e7a" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="zituiguang" android:name="UMENG_CHANNEL"/>
     </application>
 </manifest>

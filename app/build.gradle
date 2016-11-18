@@ -55,4 +55,7 @@ dependencies {
 
     /*上拉加载更多*/
     compile 'com.wuxiaolong.pullloadmorerecyclerview:library:1.1.1'
+
+    /*友盟统计*/
+    compile 'com.umeng.analytics:analytics:latest.integration'
 }

@@ -23,7 +23,7 @@ public class Constants {
     /**
      * 凉窝下载地址
      */
-    public static String PATH_LWO;
+    public static String PATH_KWO;
 
     /**
      * 企鹅下载地址

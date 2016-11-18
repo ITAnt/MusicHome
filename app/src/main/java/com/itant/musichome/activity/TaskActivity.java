@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
@@ -18,6 +19,7 @@ import com.itant.musichome.MusicApplication;
 import com.itant.musichome.R;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.utils.ToastTools;
+import com.umeng.analytics.MobclickAgent;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
 import org.xutils.ex.DbException;
@@ -30,7 +32,6 @@ import java.util.List;
  * Created by Jason on 2016/11/13.
  */
 public class TaskActivity extends BaseActivity {
-    private TextView tv_content;
     private PullLoadMoreRecyclerView pmrv_task;
     private RecyclerViewAdapter mRecyclerViewAdapter;
     private List<Music> musics;
@@ -53,6 +54,7 @@ public class TaskActivity extends BaseActivity {
         pmrv_task.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
             @Override
             public void onRefresh() {
+                MobclickAgent.onEvent(TaskActivity.this, "Refresh");// 统计刷新次数
                 getMusicFromDb();
             }
 
@@ -123,10 +125,12 @@ public class TaskActivity extends BaseActivity {
                     File file = new File(music.getFilePath());
                     if (!file.exists()) {
                         ToastTools.toastShort(getApplicationContext(), "该文件已丢失，请从列表中删除");
+                        return;
                     }
 
                     // 播放
                     try {
+                        MobclickAgent.onEvent(TaskActivity.this, "Play");// 统计播放次数
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setDataAndType(Uri.parse("file://" + music.getFilePath()), "audio/MP3");
                         startActivity(intent);
@@ -153,7 +157,7 @@ public class TaskActivity extends BaseActivity {
                         @Override
                         public void onClick(View v) {
                             dialog.cancel();
-
+                            MobclickAgent.onEvent(TaskActivity.this, "Delete");// 统计删除次数
                             // 删除
                             File file = new File(music.getFilePath());
                             if (file.exists()) {
@@ -183,6 +187,21 @@ public class TaskActivity extends BaseActivity {
                     });
                 }
             });
+
+            holder.ll_song.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // 播放
+                    try {
+                        MobclickAgent.onEvent(TaskActivity.this, "Play");// 统计播放次数
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setDataAndType(Uri.parse("file://" + music.getFilePath()), "audio/MP3");
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        ToastTools.toastShort(getApplicationContext(), "找不到文件");
+                    }
+                }
+            });
         }
 
         @Override
@@ -198,6 +217,7 @@ public class TaskActivity extends BaseActivity {
             private CircleProgressBar cpb_task;
             private ImageView iv_play;
             private ImageView iv_delete;
+            private LinearLayout ll_song;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -210,6 +230,7 @@ public class TaskActivity extends BaseActivity {
                 cpb_task = (CircleProgressBar) itemView.findViewById(R.id.cpb_task);
                 iv_play = (ImageView) itemView.findViewById(R.id.iv_play);
                 iv_delete = (ImageView) itemView.findViewById(R.id.iv_delete);
+                ll_song = (LinearLayout) itemView.findViewById(R.id.ll_song);
             }
         }
     }

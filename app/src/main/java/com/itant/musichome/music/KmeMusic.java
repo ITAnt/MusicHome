@@ -8,7 +8,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.itant.musichome.MusicApplication;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
-import com.itant.musichome.utils.SecureTool;
 import com.itant.musichome.utils.ToastTools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -38,34 +37,31 @@ public class KmeMusic {
      * 获取企鹅歌曲信息
      */
     public void getDogSongs(final List<Music> musics, String keyWords) {
-        String url = "http://mobilecdn.kugou.com/api/v3/search/song?format=jsonp&keyword=" + keyWords + "&page=1&pagesize=20&showtype=1";
+        String url = "http://search.kuwo.cn/r.s?all=" + keyWords + "&ft=music&itemset=web_2013&client=kt&pn=" + "0" + "&rn=20&rformat=json&encoding=utf8";
         RequestParams params = new RequestParams(url);
         x.http().get(params, new Callback.CommonCallback<String>() {
 
             @Override
-            public void onSuccess(String result) {
-                String json = result.substring(result.indexOf("{"), result.lastIndexOf(")"));
-                if (TextUtils.isEmpty(json)) {
+            public void onSuccess(String rawResult) {
+                if (TextUtils.isEmpty(rawResult)) {
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有搜索结果");
                     return;
                 }
 
-                JSONObject jsonObject = JSON.parseObject(json);
+                String result = rawResult.replaceAll("'", "\"");
+
+                JSONObject jsonObject = JSON.parseObject(result);
                 if (jsonObject == null) {
                     return;
                 }
 
-                JSONObject dataObject = jsonObject.getJSONObject("data");
-                if (dataObject == null) {
-                    return;
-                }
-
-                int total = dataObject.getIntValue("total");
-                if (total <= 0) {
+                String total = jsonObject.getString("TOTAL");
+                if (TextUtils.isEmpty(total) || Integer.parseInt(total) <= 0) {
                     ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
-                JSONArray listArray = dataObject.getJSONArray("info");
+                JSONArray listArray = jsonObject.getJSONArray("abslist");
                 if (listArray == null) {
                     return;
                 }
@@ -78,36 +74,52 @@ public class KmeMusic {
 
 
                     Music music = new Music();
-                    music.setMusicType(0);// 音乐来源
+                    music.setMusicType(1);// 音乐来源
                     music.setSinger("未知");// 歌手
-                    music.setId(object.getString("hash"));// 歌曲ID
-                    music.setName(object.getString("filename"));// 歌名
-                    music.setSinger(object.getString("singername"));// 歌手
-                    music.setAlbum("");// 专辑
+                    String songId = object.getString("MUSICRID");
+                    music.setId(songId);// 歌曲ID
+                    music.setName(object.getString("SONGNAME"));// 歌名
+                    music.setSinger(object.getString("ARTIST"));// 歌手
+                    music.setAlbum(object.getString("ALBUM"));// 专辑
 
-
-                    music.setBitrate(object.getString("bitrate"));// 音质
-                    music.setFileName(music.getName() + "-" + music.getSinger() + ".mp3");// 文件名
-
-                    String hash = object.getString("hash");
-                    String hash320 = object.getString("320hash");
-                    if (!TextUtils.isEmpty(hash320)) {
-                        hash = hash320;
-                        music.setBitrate("320");// 音质
+                    String formats = object.getString("FORMATS");
+                    String bitrate = "128";
+                    String mp3Url = "";
+                    String extension = ".mp3";
+                    if (formats.contains("MP3128")) {
+                        mp3Url = "http://antiserver.kuwo.cn/anti.s?response=url&type=convert_url&br=128kmp3&format=mp3&rid=" + songId;
+                        bitrate = "128";
+                        extension = ".mp3";
                     }
-
-                    String sqhash = object.getString("sqhash");
-                    if (!TextUtils.isEmpty(sqhash)) {
-                        hash = sqhash;
-                        music.setBitrate("无损");// 音质
+                    if (formats.contains("MP3192")) {
+                        mp3Url = "http://antiserver.kuwo.cn/anti.s?response=url&type=convert_url&br=192kmp3&format=mp3&rid=" + songId;
+                        bitrate = "192";
+                        extension = ".mp3";
                     }
+                    if (formats.contains("MP3H")) {
+                        mp3Url = "http://antiserver.kuwo.cn/anti.s?response=url&type=convert_url&br=320kmp3&format=mp3&rid=" + songId;
+                        //mp3Url = "http://antiserver.kuwo.cn/anti.s?response=url&type=convert_url&br=192kmp3&format=mp3&rid=" + songId;
+                        bitrate = "320";
+                        extension = ".mp3";
+                    }
+                    if (formats.contains("AL")) {
+                        mp3Url = "http://antiserver.kuwo.cn/anti.s?response=url&type=convert_url&br=2000kflac&format=ape&rid=" + songId;
+                        bitrate = "无损";
+                        extension = ".mp3";
+                    }
+                    /*if (text1.Contains("MP4")) {
+                        item.MvUrl = "http://antiserver.kuwo.cn/anti.s?response=url&type=convert_url&format=mp4&rid=" + item.SongId;
+                    }
+                    if (text1.Contains("MV")) {
+                        item.MvUrl = "http://antiserver.kuwo.cn/anti.s?response=url&type=convert_url&format=mkv&rid=" + item.SongId;
+                    }*/
+                    music.setBitrate(bitrate);// 音质
+                    music.setFileName(music.getName() + "-" + music.getSinger() + extension);// 文件名
 
-
-                    String key = SecureTool.getMD5String(hash + "kgcloud");
-                    music.setMp3Url("http://trackercdn.kugou.com/i/?key=" + key + "&cmd=4&acceptMp3=1&hash=" + hash + "&pid=1");// 下载地址
+                    music.setMp3Url(mp3Url);// 下载地址
 
                     // 文件路径
-                    music.setFilePath(Constants.PATH_DOG + music.getFileName());
+                    music.setFilePath(Constants.PATH_KWO + music.getFileName());
                     musics.add(music);
                 }
 
