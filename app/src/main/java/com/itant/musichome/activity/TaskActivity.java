@@ -113,6 +113,30 @@ public class TaskActivity extends BaseActivity {
             holder.tv_bitrate.setText(music.getBitrate());
             holder.tv_singer.setText(music.getSinger() + " " + music.getAlbum());
             holder.cpb_task.setProgress(music.getProgress());
+
+            switch (music.getMusicType()) {
+                case 0:
+                    holder.tv_from.setText("小狗");
+                    break;
+                case 1:
+                    holder.tv_from.setText("凉窝");
+                    break;
+                case 2:
+                    holder.tv_from.setText("企鹅");
+                    break;
+                case 3:
+                    holder.tv_from.setText("白云");
+                    break;
+                case 4:
+                    holder.tv_from.setText("熊掌");
+                    break;
+                case 5:
+                    holder.tv_from.setText("龙虾");
+                    break;
+                default:
+                    break;
+            }
+
             holder.iv_play.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -218,6 +242,7 @@ public class TaskActivity extends BaseActivity {
             private ImageView iv_play;
             private ImageView iv_delete;
             private LinearLayout ll_song;
+            private TextView tv_from;// 歌曲来源
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -231,6 +256,7 @@ public class TaskActivity extends BaseActivity {
                 iv_play = (ImageView) itemView.findViewById(R.id.iv_play);
                 iv_delete = (ImageView) itemView.findViewById(R.id.iv_delete);
                 ll_song = (LinearLayout) itemView.findViewById(R.id.ll_song);
+                tv_from = (TextView) itemView.findViewById(R.id.tv_from);
             }
         }
     }

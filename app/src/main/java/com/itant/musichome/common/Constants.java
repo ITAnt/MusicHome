@@ -3,6 +3,8 @@ package com.itant.musichome.common;
 import org.xutils.common.Callback.Cancelable;
 import org.xutils.common.task.PriorityExecutor;
 
+import java.net.HttpCookie;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
@@ -35,6 +37,16 @@ public class Constants {
      */
     public static String PATH_YUN;
 
+    /**
+     * 熊掌下载地址
+     */
+    public static String PATH_XIONG;
+
+    /**
+     * 龙虾下载地址
+     */
+    public static String PATH_XIA;
+
     public static Executor EXECUTOR_MUSIC = new PriorityExecutor(5, true);
 
     //public static Map<String, Cancelable> MUSIC_TASKS;
@@ -50,4 +62,5 @@ public class Constants {
     public static final String EVENT_UPDATE_MUSICS = "update_music";
 
 
+    //public static List<HttpCookie> COOKIE_CONTAINER;
 }

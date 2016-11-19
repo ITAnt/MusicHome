@@ -12,6 +12,8 @@ public class Music {
     @Column(name = "id", isId = true)
     private String id;// 歌曲的ID
 
+    private String sourceId;// 歌曲最原始的ID
+
     @Column(name = "fileName")
     private String fileName;// 本地文件名，包括后缀名
 
@@ -139,5 +141,13 @@ public class Music {
 
     public void setMusicType(int musicType) {
         this.musicType = musicType;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
     }
 }

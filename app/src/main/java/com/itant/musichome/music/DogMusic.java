@@ -35,9 +35,9 @@ public class DogMusic {
     }
 
     /**
-     * 获取企鹅歌曲信息
+     * 获取小狗歌曲信息
      */
-    public void getDogSongs(final List<Music> musics, String keyWords) {
+    public void getDogSongs(final List<Music> musics, String keyWords) throws Exception {
         String url = "http://mobilecdn.kugou.com/api/v3/search/song?format=jsonp&keyword=" + keyWords + "&page=1&pagesize=20&showtype=1";
         RequestParams params = new RequestParams(url);
         x.http().get(params, new Callback.CommonCallback<String>() {
@@ -45,27 +45,45 @@ public class DogMusic {
             @Override
             public void onSuccess(String result) {
                 if (TextUtils.isEmpty(result)) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
                 String json = result.substring(result.indexOf("{"), result.lastIndexOf(")"));
                 if (TextUtils.isEmpty(json)) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+
                     return;
                 }
 
                 JSONObject jsonObject = JSON.parseObject(json);
                 if (jsonObject == null) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+
                     return;
                 }
 
                 JSONObject dataObject = jsonObject.getJSONObject("data");
                 if (dataObject == null) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+
                     return;
                 }
 
                 int total = dataObject.getIntValue("total");
                 if (total <= 0) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
                     ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+
                     return;
                 }
 
@@ -83,7 +101,8 @@ public class DogMusic {
 
                     Music music = new Music();
                     music.setMusicType(0);// 音乐来源
-                    music.setId(object.getString("hash"));// 歌曲ID
+                    music.setSourceId(object.getString("hash"));// 歌曲最原始的ID===========这个不是
+                    music.setId("dog" + object.getString("hash"));// 歌曲ID
                     music.setName(object.getString("filename"));// 歌名
                     music.setSinger(object.getString("singername"));// 歌手
                     music.setAlbum("");// 专辑

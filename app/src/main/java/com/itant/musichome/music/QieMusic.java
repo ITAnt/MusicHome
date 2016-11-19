@@ -5,8 +5,10 @@ import android.text.TextUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.itant.musichome.MusicApplication;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
+import com.itant.musichome.utils.ToastTools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.xutils.common.Callback;
@@ -34,7 +36,7 @@ public class QieMusic {
     /**
      * 获取企鹅歌曲信息
      */
-    public void getQieSongs(final List<Music> musics, String keyWords) {
+    public void getQieSongs(final List<Music> musics, String keyWords) throws Exception {
         String url = "http://soso.music.qq.com/fcgi-bin/music_search_new_platform?t=0&n=20&g_tk=157256710&loginUin=584586119&hostUin=0&format=jsonp&inCharset=GB2312&outCharset=utf-8&notice=0&platform=newframe&jsonpCallback=jsnp_callback&needNewCode=0&w=" + keyWords + "&p=0&catZhida=1&remoteplace=sizer.newclient.song_all&searchid=11040987310239770213&clallback=jsnp_callback&lossless=0";
         RequestParams params = new RequestParams(url);
         x.http().get(params, new Callback.CommonCallback<String>() {
@@ -42,36 +44,57 @@ public class QieMusic {
             @Override
             public void onSuccess(String result) {
                 if (TextUtils.isEmpty(result)) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
                 String json = result.substring(result.indexOf("{"), result.lastIndexOf(")"));
                 if (TextUtils.isEmpty(json)) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
                 JSONObject jsonObject = JSON.parseObject(json);
                 if (jsonObject == null) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
                 JSONObject dataObject = jsonObject.getJSONObject("data");
                 if (dataObject == null) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
                 JSONObject songObject = dataObject.getJSONObject("song");
                 if (songObject == null) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
                 String totalNum = songObject.getString("totalnum");
                 if (TextUtils.equals(totalNum, "0")) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
                 JSONArray listArray = songObject.getJSONArray("list");
                 if (listArray == null) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
@@ -93,7 +116,8 @@ public class QieMusic {
                     Music music = new Music();// 音乐来源
                     music.setMusicType(2);
                     // 音乐的唯一ID
-                    music.setId(String.valueOf(System.currentTimeMillis()));
+                    music.setSourceId(String.valueOf(System.currentTimeMillis()));// ===========这个不是真的
+                    music.setId("qie" + String.valueOf(System.currentTimeMillis()));
                     if (f.contains("@@")) {
                         music.setBitrate("128");
                         String[] infos = f.split("@@");

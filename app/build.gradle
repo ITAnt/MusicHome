@@ -49,6 +49,7 @@ dependencies {
 
     /*请求和下载*/
     /*compile 'com.koushikdutta.async:androidasync:2.+'*/
+    compile 'com.loopj.android:android-async-http:1.4.9'
 
     /*EventBus*/
     compile 'org.greenrobot:eventbus:3.0.0'

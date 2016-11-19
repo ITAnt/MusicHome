@@ -1,6 +1,7 @@
 package com.itant.musichome.activity;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -27,8 +28,12 @@ import com.itant.musichome.common.Constants;
 import com.itant.musichome.music.DogMusic;
 import com.itant.musichome.music.KmeMusic;
 import com.itant.musichome.music.QieMusic;
+import com.itant.musichome.music.XiaMusic;
+import com.itant.musichome.music.XiongMusic;
 import com.itant.musichome.music.YunMusic;
 import com.itant.musichome.utils.ToastTools;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.umeng.analytics.MobclickAgent;
 import com.wang.avi.AVLoadingIndicatorView;
 
@@ -37,11 +42,15 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.xutils.common.Callback;
 import org.xutils.ex.DbException;
+import org.xutils.http.RequestParams;
 import org.xutils.x;
 
 import java.io.File;
+import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, RadioGroup.OnCheckedChangeListener, AdapterView.OnItemClickListener {
     private static String[] REQUIRED_PERMISSIONS = {
@@ -57,12 +66,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private RelativeLayout rl_about;
     private RelativeLayout rl_task;
 
-    private int index = 0;// 0小狗 1凉窝 2企鹅 3白云
+    private int index = 0;// 0小狗 1凉窝 2企鹅 3白云 4熊掌 5
     private String keyWords;// 搜索的关键字，一般为歌曲名
     private EditText et_key;
 
     private InputMethodManager inputMethodManager;
-    private AVLoadingIndicatorView avliv_loading;
+    private AlertDialog loadingDialog;
 
     /**
      * 初始化权限
@@ -139,8 +148,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         BootstrapButton bb_search = (BootstrapButton) findViewById(R.id.bb_search);
         bb_search.setOnClickListener(this);
 
-        avliv_loading = (AVLoadingIndicatorView) findViewById(R.id.avliv_loading);
+        initDialog();
+    }
 
+    private void initDialog() {
+        loadingDialog = new AlertDialog.Builder(this).create();
+        loadingDialog.show();
+        loadingDialog.setContentView(R.layout.dialog_loading);
+        loadingDialog.setCancelable(true);
+        loadingDialog.setCanceledOnTouchOutside(true);
+        loadingDialog.cancel();
     }
 
     /**
@@ -151,6 +168,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Constants.PATH_KWO = Constants.PATH_DOWNLOAD + "lwo/";
         Constants.PATH_QIE = Constants.PATH_DOWNLOAD + "qie/";
         Constants.PATH_YUN = Constants.PATH_DOWNLOAD + "yun/";
+        Constants.PATH_XIONG = Constants.PATH_DOWNLOAD + "xiong/";
+        Constants.PATH_XIA = Constants.PATH_DOWNLOAD + "xia/";
+
         File file = new File(Constants.PATH_DOG);
         if (!file.exists()) {
             file.mkdirs();
@@ -167,6 +187,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         file = new File(Constants.PATH_YUN);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+
+        file = new File(Constants.PATH_XIONG);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+
+        file = new File(Constants.PATH_XIA);
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -207,33 +237,51 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     musics.clear();
                 }
                 musicAdapter.notifyDataSetChanged();
-                avliv_loading.show();
+                loadingDialog.show();
 
-                switch (index) {
-                    case 0:
-                        // 搜索小狗
-                        MobclickAgent.onEvent(this, "Dog");// 搜索小狗
-                        DogMusic.getInstance().getDogSongs(musics, keyWords);
-                        break;
-                    case 1:
-                        // 搜索凉我
-                        MobclickAgent.onEvent(this, "Kwo");// 统计凉窝
-                        KmeMusic.getInstance().getDogSongs(musics, keyWords);
-                        break;
-                    case 2:
-                        // 搜索企鹅
-                        MobclickAgent.onEvent(this, "Qie");// 统计企鹅
-                        QieMusic.getInstance().getQieSongs(musics, keyWords);
-                        break;
-                    case 3:
-                        // 搜索白云
-                        MobclickAgent.onEvent(this, "Yun");// 统计白云
-                        YunMusic.getInstance().getYunSongs(musics, keyWords);
-                        break;
-                    default:
-                        // 搜索小狗
-                        break;
+                try {
+                    switch (index) {
+                        case 0:
+                            // 搜索小狗
+                            MobclickAgent.onEvent(this, "Dog");// 搜索小狗
+                            DogMusic.getInstance().getDogSongs(musics, keyWords);
+                            break;
+                        case 1:
+                            // 搜索凉我
+                            MobclickAgent.onEvent(this, "Kwo");// 统计凉窝
+                            KmeMusic.getInstance().getDogSongs(musics, keyWords);
+                            break;
+                        case 2:
+                            // 搜索企鹅
+                            MobclickAgent.onEvent(this, "Qie");// 统计企鹅
+                            QieMusic.getInstance().getQieSongs(musics, keyWords);
+                            break;
+                        case 3:
+                            // 搜索白云
+                            MobclickAgent.onEvent(this, "Yun");// 统计白云
+                            YunMusic.getInstance().getYunSongs(musics, keyWords);
+                            break;
+                        case 4:
+                            // 搜索熊掌
+                            MobclickAgent.onEvent(this, "Xiong");// 统计熊掌
+                            XiongMusic.getInstance().getXiongSongs(musics, keyWords);
+                            break;
+
+                        case 5:
+                            // 搜索龙虾
+                            MobclickAgent.onEvent(this, "Xia");// 统计龙虾
+                            XiaMusic.getInstance().getXiaSongs(musics, keyWords);
+                            break;
+                        default:
+                            // 搜索小狗
+                            break;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ToastTools.toastShort(MainActivity.this, "歌曲有误");
+                    loadingDialog.dismiss();
                 }
+
                 break;
             default:
                 break;
@@ -254,6 +302,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.rb_yun:
                 index = 3;
+                break;
+
+            case R.id.rb_xiong:
+                index = 4;
+                break;
+
+            case R.id.rb_xia:
+                index = 5;
                 break;
             default:
                 index = 0;
@@ -297,7 +353,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             e.printStackTrace();
         }
 
-        ToastTools.toastShort(getApplicationContext(), "已将" + music.getFileName() + "添加到下载列表");
+        ToastTools.toastShort(getApplicationContext(), "下载" + music.getFileName());
 
         switch (music.getMusicType()) {
             case 0:
@@ -353,31 +409,31 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                 x.http().get(kmeParams, new Callback.CommonCallback<String>() {
 
-                            @Override
-                            public void onSuccess(String result) {
-                                music.setMp3Url(result.trim().replaceAll(" ", ""));
-                                try {
-                                    MusicApplication.db.update(music, "mp3Url");
-                                } catch (DbException e) {
-                                    e.printStackTrace();
-                                }
-                                downloadMusic(music);
-                            }
+                    @Override
+                    public void onSuccess(String result) {
+                        music.setMp3Url(result.trim().replaceAll(" ", ""));
+                        try {
+                            MusicApplication.db.update(music, "mp3Url");
+                        } catch (DbException e) {
+                            e.printStackTrace();
+                        }
+                        downloadMusic(music);
+                    }
 
-                            @Override
-                            public void onError(Throwable ex, boolean isOnCallback) {
-                                ToastTools.toastShort(MainActivity.this, "这首歌不能下载了");
-                            }
+                    @Override
+                    public void onError(Throwable ex, boolean isOnCallback) {
+                        ToastTools.toastShort(MainActivity.this, "这首歌不能下载了");
+                    }
 
-                            @Override
-                            public void onCancelled(CancelledException cex) {
+                    @Override
+                    public void onCancelled(CancelledException cex) {
 
-                            }
+                    }
 
-                            @Override
-                            public void onFinished() {
+                    @Override
+                    public void onFinished() {
 
-                            }
+                    }
                 });
                 break;
 
@@ -390,13 +446,42 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 // 白云，直接下
                 downloadMusic(music);
                 break;
+
+            case 4:
+                // 熊掌，直接下
+                downloadMusic(music);
+                break;
+
+            case 5:
+                // 龙虾，需要获取地址才行
+                String url = "http://www.xiami.com/song/gethqsong/sid/" + music.getSourceId();
+
+                AsyncHttpClient client = new AsyncHttpClient();
+                client.setUserAgent("Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)");
+                client.get(url, new TextHttpResponseHandler() {
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        ToastTools.toastShort(MusicApplication.applicationContext, responseString);
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                        ToastTools.toastShort(MusicApplication.applicationContext, responseString);
+                    }
+                });
+
+                break;
             default:
                 break;
         }
     }
 
+    /**
+     * 下载音乐
+     * @param music
+     */
     private void downloadMusic(final Music music) {
-
 
         org.xutils.http.RequestParams params = new org.xutils.http.RequestParams(music.getMp3Url());
         params.setAutoResume(true);
@@ -473,7 +558,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void onMessageEvent(String event) {
         if (TextUtils.equals(event, Constants.EVENT_LOAD_COMPLETE)) {
             // 停止加载动画
-            avliv_loading.hide();
+            loadingDialog.dismiss();
         }
 
         if (TextUtils.equals(event, Constants.EVENT_UPDATE_MUSICS)) {

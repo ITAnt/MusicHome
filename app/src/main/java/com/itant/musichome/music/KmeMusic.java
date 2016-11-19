@@ -34,9 +34,9 @@ public class KmeMusic {
     }
 
     /**
-     * 获取企鹅歌曲信息
+     * 获取凉窝歌曲信息
      */
-    public void getDogSongs(final List<Music> musics, String keyWords) {
+    public void getDogSongs(final List<Music> musics, String keyWords) throws Exception {
         String url = "http://search.kuwo.cn/r.s?all=" + keyWords + "&ft=music&itemset=web_2013&client=kt&pn=" + "0" + "&rn=20&rformat=json&encoding=utf8";
         RequestParams params = new RequestParams(url);
         x.http().get(params, new Callback.CommonCallback<String>() {
@@ -44,7 +44,9 @@ public class KmeMusic {
             @Override
             public void onSuccess(String rawResult) {
                 if (TextUtils.isEmpty(rawResult)) {
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有搜索结果");
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
@@ -57,12 +59,18 @@ public class KmeMusic {
 
                 String total = jsonObject.getString("TOTAL");
                 if (TextUtils.isEmpty(total) || Integer.parseInt(total) <= 0) {
+
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
                     ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
                 JSONArray listArray = jsonObject.getJSONArray("abslist");
                 if (listArray == null) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
@@ -77,7 +85,8 @@ public class KmeMusic {
                     music.setMusicType(1);// 音乐来源
                     music.setSinger("未知");// 歌手
                     String songId = object.getString("MUSICRID");
-                    music.setId(songId);// 歌曲ID
+                    music.setSourceId(songId);// 歌曲ID
+                    music.setId("kwo" + songId);// 歌曲ID
                     music.setName(object.getString("SONGNAME"));// 歌名
                     music.setSinger(object.getString("ARTIST"));// 歌手
                     music.setAlbum(object.getString("ALBUM"));// 专辑

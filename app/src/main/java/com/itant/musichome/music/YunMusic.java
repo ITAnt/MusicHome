@@ -6,8 +6,10 @@ import android.util.Base64;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.itant.musichome.MusicApplication;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
+import com.itant.musichome.utils.ToastTools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.xutils.common.Callback;
@@ -36,9 +38,9 @@ public class YunMusic {
     }
 
     /**
-     * 获取企鹅歌曲信息
+     * 获取白云歌曲信息
      */
-    public void getYunSongs(final List<Music> musics, String keyWords) {
+    public void getYunSongs(final List<Music> musics, String keyWords) throws Exception {
         RequestParams params = new RequestParams("http://music.163.com/api/search/pc");
         params.addBodyParameter("offset", "0");
         params.addBodyParameter("total", "true");
@@ -51,22 +53,34 @@ public class YunMusic {
             @Override
             public void onSuccess(String result) {
                 if (TextUtils.isEmpty(result)) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
                 JSONObject jsonObject = JSON.parseObject(result);
                 if (jsonObject == null) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
                 JSONObject resultObject = jsonObject.getJSONObject("result");
                 if (resultObject == null) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
 
                 JSONArray listArray = resultObject.getJSONArray("songs");
                 if (listArray == null) {
+                    // 结束加载动画
+                    EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
@@ -78,7 +92,8 @@ public class YunMusic {
 
                     Music music = new Music();
                     music.setMusicType(3);// 音乐来源
-                    music.setId(object.getString("id"));// 歌曲ID
+                    music.setSourceId(object.getString("id"));// 歌曲ID
+                    music.setId("yun" + object.getString("id"));// 歌曲ID
                     music.setSinger("未知");// 歌手
 
                     try {
