@@ -16,13 +16,15 @@
             android:id="@+id/rl_about"
             android:layout_width="50dp"
             android:layout_height="match_parent"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:background="@drawable/selector_btn_white_solid">
 
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:scaleType="fitXY"
-                android:src="@mipmap/about" />
+                android:src="@mipmap/about"
+                android:layout_centerInParent="true"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -31,7 +33,8 @@
             android:layout_height="match_parent"
             android:layout_toRightOf="@+id/rl_about"
             android:gravity="center_vertical"
-            android:paddingLeft="10dp">
+            android:paddingLeft="10dp"
+            android:background="@drawable/selector_btn_white_solid">
 
             <ImageView
                 android:layout_width="28dp"
