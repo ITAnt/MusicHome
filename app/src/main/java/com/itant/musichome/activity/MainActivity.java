@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -31,27 +32,19 @@ import com.itant.musichome.music.QieMusic;
 import com.itant.musichome.music.XiaMusic;
 import com.itant.musichome.music.XiongMusic;
 import com.itant.musichome.music.YunMusic;
-import com.itant.musichome.utils.StringTool;
 import com.itant.musichome.utils.ToastTools;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.TextHttpResponseHandler;
 import com.umeng.analytics.MobclickAgent;
-import com.wang.avi.AVLoadingIndicatorView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.xutils.common.Callback;
 import org.xutils.ex.DbException;
-import org.xutils.http.RequestParams;
 import org.xutils.x;
 
 import java.io.File;
-import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.List;
-
-import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, RadioGroup.OnCheckedChangeListener, AdapterView.OnItemClickListener {
     private static String[] REQUIRED_PERMISSIONS = {
@@ -97,13 +90,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             boolean granted = grantResult == PackageManager.PERMISSION_GRANTED;
 
             if (!granted) {
-                new Handler().postDelayed(new Runnable() {
+                MobclickAgent.onEvent(MainActivity.this, "Permission");// 统计权限拒绝次数
+
+                final AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
+                dialog.show();
+                dialog.setContentView(R.layout.dialog_permission);
+                dialog.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
+
+                BootstrapButton bb_confirm = (BootstrapButton) dialog.findViewById(R.id.bb_confirm);
+                bb_confirm.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void run() {
-                        ToastTools.toastShort(MainActivity.this, "应用没有足够的权限");
+                    public void onClick(View v) {
+                        dialog.cancel();
+                        // 退出
                         System.exit(0);
                     }
-                }, 3000);
+                });
             }
         }
     }

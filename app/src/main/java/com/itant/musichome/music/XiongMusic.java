@@ -1,6 +1,5 @@
 package com.itant.musichome.music;
 
-import android.net.Uri;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -9,7 +8,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.itant.musichome.MusicApplication;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
-import com.itant.musichome.utils.SecureTool;
 import com.itant.musichome.utils.ToastTools;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;

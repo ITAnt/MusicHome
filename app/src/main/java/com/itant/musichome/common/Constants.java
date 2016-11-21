@@ -1,11 +1,9 @@
 package com.itant.musichome.common;
 
-import org.xutils.common.Callback.Cancelable;
 import org.xutils.common.task.PriorityExecutor;
 
 import java.net.HttpCookie;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executor;
 
 /**

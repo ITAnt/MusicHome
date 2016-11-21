@@ -1,20 +1,15 @@
 package com.itant.musichome.music;
 
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.itant.musichome.MusicApplication;
-import com.itant.musichome.activity.MainActivity;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
 import com.itant.musichome.utils.StringTool;
 import com.itant.musichome.utils.ToastTools;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.greenrobot.eventbus.EventBus;
 import org.xutils.common.Callback;
@@ -23,14 +18,7 @@ import org.xutils.http.cookie.DbCookieStore;
 import org.xutils.x;
 
 import java.net.HttpCookie;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by 詹子聪 on 2016/11/15.
@@ -127,6 +115,7 @@ public class XiaMusic {
 
     /**
      * 获取歌曲信息
+     *
      * @param musics
      * @param keyWords
      */
@@ -294,6 +283,7 @@ public class XiaMusic {
      * 更新龙虾高音质地址
      */
     private int i = 0;
+
     private void updateHQUrl(final List<Music> musics) {
         for (final Music music : musics) {
             String url = "http://www.xiami.com/song/gethqsong/sid/" + music.getSourceId();
@@ -363,7 +353,7 @@ public class XiaMusic {
                 @Override
                 public void onFinished() {
                     i++;
-                    if (i == musics.size()-1) {
+                    if (i == musics.size() - 1) {
                         // 更新列表
                         EventBus.getDefault().post(Constants.EVENT_UPDATE_MUSICS);
                         // 结束加载动画

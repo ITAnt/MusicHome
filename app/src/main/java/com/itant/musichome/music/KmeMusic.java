@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.itant.musichome.MusicApplication;
-import com.itant.musichome.activity.MainActivity;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
 import com.itant.musichome.utils.ToastTools;

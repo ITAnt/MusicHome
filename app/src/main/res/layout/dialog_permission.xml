@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="权限问题"
+        android:layout_marginBottom="30dp"
+        android:textSize="@dimen/size_title"
+        android:textColor="@color/bootstrap_brand_danger"/>
+
+    <TextView
+        android:id="@+id/tv_song_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="很遗憾，您拒绝了本应用正常运行所需的最基本的权限，应用即将退出。请重新安装并授予相关应用权限。"
+        android:textSize="12sp"
+        android:layout_marginBottom="30dp"
+        android:textColor="@color/gray"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/bb_confirm"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:minHeight="35dp"
+            android:text="确定"
+            app:bootstrapBrand="success"
+            app:bootstrapSize="sm"
+            app:buttonMode="regular"
+            app:roundedCorners="true"
+            app:showOutline="true" />
+
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
