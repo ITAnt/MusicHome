@@ -163,7 +163,7 @@ public class XiongMusic {
 
                                 music.setBitrate(info.getString("rate"));// 音质
                                 String format = info.getString("format");
-                                music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getId() + format);// 文件名
+                                music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getId() + "." +format);// 文件名
 
 
                                 music.setMp3Url(info.getString("songLink"));// 下载地址
