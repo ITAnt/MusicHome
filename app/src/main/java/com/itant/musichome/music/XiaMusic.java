@@ -352,15 +352,19 @@ public class XiaMusic {
 
                 @Override
                 public void onFinished() {
-                    i++;
-                    if (i == musics.size() - 1) {
-                        // 更新列表
-                        EventBus.getDefault().post(Constants.EVENT_UPDATE_MUSICS);
-                        // 结束加载动画
-                        EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    }
+                    notifyIfNeed(musics.size());
                 }
             });
+        }
+    }
+
+    private synchronized void notifyIfNeed(int size) {
+        i++;
+        if (i >= size - 1) {
+            // 更新列表
+            EventBus.getDefault().post(Constants.EVENT_UPDATE_MUSICS);
+            // 结束加载动画
+            EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
         }
     }
 }

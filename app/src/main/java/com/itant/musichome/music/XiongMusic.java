@@ -41,7 +41,7 @@ public class XiongMusic {
         return DogMusicFactory.instance;
     }
 
-    private int i = 0, idsSize = 0;
+    private int index = 0;
 
     /**
      * 获取熊掌歌曲信息
@@ -89,7 +89,7 @@ public class XiongMusic {
                     return;
                 }
 
-                List<String> ids = new ArrayList<>();
+                final List<String> ids = new ArrayList<>();
                 while (matcher.find()) {
                     String[] raw = matcher.group().split(":");
                     if (raw != null && raw.length == 2) {
@@ -104,8 +104,8 @@ public class XiongMusic {
                     return;
                 }
 
-                for (i = 0, idsSize = ids.size(); i < idsSize; i++) {
-                    String infoUrl = "http://music.baidu.com/data/music/fmlink?songIds=" + ids.get(i) + "&type=mp3&rate=320";
+                for (String id : ids) {
+                    String infoUrl = "http://music.baidu.com/data/music/fmlink?songIds=" + id + "&type=mp3&rate=320";
                     RequestParams params = new RequestParams(infoUrl);
                     x.http().get(params, new Callback.CommonCallback<String>() {
 
@@ -172,11 +172,6 @@ public class XiongMusic {
                                 music.setFilePath(Constants.PATH_XIONG + music.getFileName());
                                 musics.add(music);
                             }
-
-                            if (i == idsSize) {
-                                // 更新搜索结果
-                                EventBus.getDefault().post(Constants.EVENT_UPDATE_MUSICS);
-                            }
                         }
 
                         @Override
@@ -191,14 +186,22 @@ public class XiongMusic {
 
                         @Override
                         public void onFinished() {
-                            if (i == idsSize) {
-                                // 结束加载动画
-                                EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                            }
+                            notifyIfNeed(ids.size());
                         }
                     });
                 }
             }
         });
+    }
+
+    private synchronized void notifyIfNeed(int size) {
+        index++;
+        if (index >= size-1) {
+            // 结束加载动画
+            EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+            // 更新搜索结果
+            EventBus.getDefault().post(Constants.EVENT_UPDATE_MUSICS);
+        }
+
     }
 }
