@@ -62,5 +62,6 @@ public class Constants {
     public static final String EVENT_UPDATE_MUSICS = "update_music";
 
 
-    //public static List<HttpCookie> COOKIE_CONTAINER;
+    public static List<HttpCookie> COOKIE_CONTAINER;
+    public static long TIME_XIA_MI;
 }

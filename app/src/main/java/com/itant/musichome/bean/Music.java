@@ -44,6 +44,9 @@ public class Music {
     @Column(name = "filePath")
     private String filePath;// 本地文件路径
 
+    @Column(name = "musicTime")
+    private String musicTime;// 音乐时长
+
     @Column(name = "musicType")
     private int musicType;// 音乐来源 0小狗、1凉窝、2企鹅、3白云
 
@@ -149,5 +152,13 @@ public class Music {
 
     public void setSourceId(String sourceId) {
         this.sourceId = sourceId;
+    }
+
+    public String getMusicTime() {
+        return musicTime;
+    }
+
+    public void setMusicTime(String musicTime) {
+        this.musicTime = musicTime;
     }
 }

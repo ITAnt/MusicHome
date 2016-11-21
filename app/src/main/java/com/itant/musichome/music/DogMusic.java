@@ -139,7 +139,7 @@ public class DogMusic {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-
+                ToastTools.toastShort(MusicApplication.applicationContext, "未知错误");
             }
 
             @Override

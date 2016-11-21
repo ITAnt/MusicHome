@@ -31,6 +31,7 @@ import com.itant.musichome.music.QieMusic;
 import com.itant.musichome.music.XiaMusic;
 import com.itant.musichome.music.XiongMusic;
 import com.itant.musichome.music.YunMusic;
+import com.itant.musichome.utils.StringTool;
 import com.itant.musichome.utils.ToastTools;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -368,6 +369,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     public void onSuccess(String result) {
                         JSONObject jsonObject = JSON.parseObject(result);
                         if (jsonObject == null) {
+                            ToastTools.toastShort(MainActivity.this, "没有相应的下载地址");
                             return;
                         }
 
@@ -453,24 +455,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
 
             case 5:
-                // 龙虾，需要获取地址才行
-                String url = "http://www.xiami.com/song/gethqsong/sid/" + music.getSourceId();
-
-                AsyncHttpClient client = new AsyncHttpClient();
-                client.setUserAgent("Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)");
-                client.get(url, new TextHttpResponseHandler() {
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        ToastTools.toastShort(MusicApplication.applicationContext, responseString);
-                    }
-
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                        ToastTools.toastShort(MusicApplication.applicationContext, responseString);
-                    }
-                });
-
+                // 龙虾，直接下
+                downloadMusic(music);
                 break;
             default:
                 break;

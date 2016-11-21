@@ -8,8 +8,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.itant.musichome.MusicApplication;
+import com.itant.musichome.activity.MainActivity;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
+import com.itant.musichome.utils.StringTool;
 import com.itant.musichome.utils.ToastTools;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -23,6 +25,7 @@ import org.xutils.x;
 import java.net.HttpCookie;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,32 +59,58 @@ public class XiaMusic {
         loginParams.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;*/*");
         loginParams.setHeader("Referer", "http://www.xiami.com");
         loginParams.setHeader("Connection", "Keep-Alive");
-        loginParams.setHeader("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)");
+        loginParams.setHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)");
         x.http().get(loginParams, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
 
-                //DbCookieStore instance = DbCookieStore.INSTANCE;
-                //List<HttpCookie> cookieContainer = instance.getCookies();
-                //Constants.COOKIE_CONTAINER = cookieContainer;
-                /*String cookieStr = "";
+                DbCookieStore instance = DbCookieStore.INSTANCE;
+                List<HttpCookie> cookieContainer = instance.getCookies();
+                Constants.COOKIE_CONTAINER = cookieContainer;
                 for (HttpCookie cookie : cookieContainer) {
                     String name = cookie.getName();
                     String value = cookie.getValue();
                     if ("JSESSIONID".equals(name)) {
                         // 将cookie保存下来
-                        Constants.COOKIE_XIA = value;// cookie保存到内存
-                        cookieStr = value;
+                        //Constants.COOKIE_XIA = value;// cookie保存到内存
                         break;
                     }
-                }*/
+                }
+                initVip(musics, keyWords);
+            }
 
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                ToastTools.toastShort(MusicApplication.applicationContext, "账号有误");
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+    }
+
+    /**
+     * 初始化VIP
+     */
+    private void initVip(final List<Music> musics, final String keyWords) {
+        RequestParams vipParams = new RequestParams("https://login.xiami.com/member/login?" + Constants.COOKIE_CONTAINER.get(0).getName() + "=" + Constants.COOKIE_CONTAINER.get(0).getValue() + "&done=http%253A%252F%252Fwww.xiami.com%252F&type=&email=iloveb44%40163.com&password=a23187&autologin=1&submit=%E7%99%BB+%E5%BD%95");
+        Constants.TIME_XIA_MI = System.currentTimeMillis() / 10000;
+        x.http().get(vipParams, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
                 getSongInfos(musics, keyWords);
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-
+                ToastTools.toastShort(MusicApplication.applicationContext, "不是VIP");
             }
 
             @Override
@@ -104,15 +133,15 @@ public class XiaMusic {
     private void getSongInfos(final List<Music> musics, String keyWords) {
         String url = "http://www.xiami.com/web/search-songs/page/0?spm=0.0.0.0.82mhoN&key=" + keyWords + "&_xiamitoken=abchdjah6264817";
         RequestParams params = new RequestParams(url);
-        params.setHeader("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0))");
+        params.setHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)");
         params.setHeader("Connection", "Keep-Alive");
         // 设置cookie
         //params.setHeader("Cookie", "JSESSIONID="+cookie);
-//        for (HttpCookie cookie : cookieContainer) {
-//            String name = cookie.getName();
-//            String value = cookie.getValue();
-//            params.setHeader(name, value);
-//        }
+        for (HttpCookie cookie : Constants.COOKIE_CONTAINER) {
+            String name = cookie.getName();
+            String value = cookie.getValue();
+            params.setHeader(name, value);
+        }
 
         x.http().get(params, new Callback.CommonCallback<String>() {
             @Override
@@ -206,6 +235,7 @@ public class XiaMusic {
                                 Music music = new Music();
                                 music.setMusicType(5);// 音乐来源
                                 music.setSourceId(info.getString("songId"));// 歌曲最原始的ID
+                                music.setMusicTime(info.getString("length"));// 音乐时长
                                 music.setId("xia" + info.getString("songId"));// 歌曲ID
                                 music.setName(info.getString("songName"));// 歌名
                                 music.setSinger(info.getString("singers"));// 歌手
@@ -223,13 +253,12 @@ public class XiaMusic {
                             }
 
                         }
-
-                        EventBus.getDefault().post(Constants.EVENT_UPDATE_MUSICS);
+                        updateHQUrl(musics);
                     }
 
                     @Override
                     public void onError(Throwable ex, boolean isOnCallback) {
-
+                        ToastTools.toastShort(MusicApplication.applicationContext, "获取歌曲列表出错");
                     }
 
                     @Override
@@ -239,15 +268,14 @@ public class XiaMusic {
 
                     @Override
                     public void onFinished() {
-                        // 结束加载动画
-                        EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+
                     }
                 });
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-
+                ToastTools.toastShort(MusicApplication.applicationContext, "获取歌曲列表出错");
             }
 
             @Override
@@ -263,65 +291,86 @@ public class XiaMusic {
     }
 
     /**
-     * 获取下载地址
-     * @param raw
-     * @return
+     * 更新龙虾高音质地址
      */
-    public String getMP3Url(String raw) {
-        String url = "";
-        try {
-            int num = Integer.parseInt(raw.substring(0, 1));
-            String str = raw.substring(1);
-            int num2 = str.length() % num;
-            int length = (int) Math.ceil((double) (((double) str.length()) / ((double) num)));
-            String[] strArray = new String[num];
+    private int i = 0;
+    private void updateHQUrl(final List<Music> musics) {
+        for (final Music music : musics) {
+            String url = "http://www.xiami.com/song/gethqsong/sid/" + music.getSourceId();
 
-            int startIndex = 0;
-            for (int i = 0; i < num; i++) {
-                if (i < num2) {
-                    strArray[i] = str.substring(startIndex, length);
-                    startIndex += length;
-                } else if (num2 == 0) {
-                    strArray[i] = str.substring(startIndex, length);
-                    startIndex += length;
-                } else {
-                    strArray[i] = str.substring(startIndex, length - 1);
-                    startIndex += length - 1;
-                }
+            final RequestParams mp3Params = new RequestParams(url);
+            mp3Params.setHeader("Referer", "http://img.xiami.net/static/swf/seiya/1.5/player.swf?v=" + Constants.TIME_XIA_MI);// ==========拼上playertime
+            mp3Params.setHeader("Accept", "*/*");
+            mp3Params.setHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)");
+            //mp3Params.setHeader("Accept-Encoding", "gzip,deflate,sdch,");
+            //mp3Params.setHeader("Accept-Language", "zh-CN,zh;q=0.8");
+            //mp3Params.setHeader("Content-Type", "text/html; charset=utf-8");
+            mp3Params.setHeader("Connection", "Keep-Alive");
+            mp3Params.setHeader("Charset", "UTF-8");
+            // 设置cookie
+            //params.setHeader("Cookie", "JSESSIONID="+cookie);
+            for (HttpCookie cookie : Constants.COOKIE_CONTAINER) {
+                String name = cookie.getName();
+                String value = cookie.getValue();
+                mp3Params.setHeader(name, value);
             }
 
+            x.http().get(mp3Params, new Callback.CommonCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    try {
+                        JSONObject resultObj = JSON.parseObject(result);
+                        if (resultObj == null) {
+                            // 结束加载动画
+                            EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                            return;
+                        }
+                        String location = resultObj.getString("location");
+                        if (TextUtils.isEmpty(location)) {
+                            // 结束加载动画
+                            EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                            return;
+                        }
 
-            StringBuilder builder = new StringBuilder();
-            if (num2 == 0) {
-                for (int j = 0; j < length; j++) {
-                    for (int k = 0; k < num; k++) {
-                        builder.append(strArray[k].substring(j, 1));
+                        String mp3Url = StringTool.getXiaMp3Url(location);
+                        if (TextUtils.isEmpty(mp3Url)) {
+                            // 结束加载动画
+                            EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+                            return;
+                        }
+
+                        music.setMp3Url(mp3Url);
+                        if (mp3Url.contains("m6")) {
+                            music.setBitrate("320");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+                    ToastTools.toastShort(MusicApplication.applicationContext, "没有获取高音质的权限");
+                }
+
+                @Override
+                public void onCancelled(CancelledException cex) {
+
+                }
+
+                @Override
+                public void onFinished() {
+                    i++;
+                    if (i == musics.size()-1) {
+                        // 更新列表
+                        EventBus.getDefault().post(Constants.EVENT_UPDATE_MUSICS);
+                        // 结束加载动画
+                        EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
                     }
                 }
-            } else {
-                for (int m = 0; m < length; m++) {
-                    if (m == (length - 1)) {
-                        for (int n = 0; n < num2; n++) {
-                            builder.append(strArray[n].substring(m, 1));
-                        }
-                    } else {
-                        for (int num10 = 0; num10 < num; num10++) {
-                            builder.append(strArray[num10].substring(m, 1));
-                        }
-                    }
-                }
-            }
-
-            String input = URLDecoder.decode(builder.toString());
-
-            if (input != null) {
-                String one = input.replaceAll("^", "0");
-                String two = one.replaceAll("\\+", " ");
-                return two.replaceAll(".mp$", ".mp3");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            });
         }
-        return "";
     }
 }
