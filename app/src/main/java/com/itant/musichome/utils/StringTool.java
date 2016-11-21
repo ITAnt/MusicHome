@@ -69,7 +69,7 @@ public class StringTool {
             if (input != null) {
                 String one = input.replaceAll("\\^", "0");
                 String two = one.replaceAll("\\+", " ");
-                return two.replaceAll(".mp$", ".mp3");
+                return two.replaceAll("\\.mp$", ".mp3");
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -230,7 +230,7 @@ public class XiaMusic {
                                 music.setSinger(info.getString("singers"));// 歌手
                                 music.setAlbum(info.getString("album_name"));// 专辑
                                 music.setBitrate("128");// 音质
-                                String format = "mp3";
+                                String format = ".mp3";
                                 music.setMp3Url(info.getString("location"));// 下载地址
 
                                 music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getId() + format);// 文件名
