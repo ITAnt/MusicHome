@@ -35,8 +35,8 @@ public class StringTool {
                     strArray[i] = str.substring(startIndex, startIndex+length);
                     startIndex = startIndex+length;
                 } else if (num2 == 0) {
-                    strArray[i] = str.substring(startIndex, length);
-                    startIndex += length;
+                    strArray[i] = str.substring(startIndex, startIndex+length);
+                    startIndex = startIndex+length;
                 } else {
                     strArray[i] = str.substring(startIndex, startIndex+length-1);
                     startIndex = startIndex+length-1;

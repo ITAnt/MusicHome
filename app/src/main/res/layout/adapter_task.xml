@@ -81,14 +81,14 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginLeft="10dp"
-            android:src="@mipmap/play" />
+            android:src="@mipmap/play"/>
 
         <ImageView
             android:id="@+id/iv_delete"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginLeft="10dp"
-            android:src="@mipmap/delete" />
+            android:src="@mipmap/delete"/>
     </LinearLayout>
 
     <View
