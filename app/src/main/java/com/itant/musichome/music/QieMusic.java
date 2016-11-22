@@ -156,7 +156,7 @@ public class QieMusic {
                         music.setBitrate("128");
                         try {
                             // 低音质下载地址
-                            music.setMp3Url("http://tsmusic128.tc.qq.com/" + (Integer.parseInt(music.getId()) + 30000000) + ".mp3");
+                            music.setMp3Url("http://tsmusic128.tc.qq.com/" + (Integer.parseInt(music.getSourceId()) + 30000000) + ".mp3");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
