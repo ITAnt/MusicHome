@@ -102,14 +102,14 @@ public class DogMusic {
                     Music music = new Music();
                     music.setMusicType(0);// 音乐来源
                     music.setSourceId(object.getString("hash"));// 歌曲最原始的ID===========这个不是
-                    music.setId("dog" + object.getString("hash"));// 歌曲ID
+                    music.setId("dog" + music.getSourceId());// 歌曲ID
                     music.setName(object.getString("filename"));// 歌名
                     music.setSinger(object.getString("singername"));// 歌手
                     music.setAlbum("");// 专辑
 
 
                     music.setBitrate(object.getString("bitrate"));// 音质
-                    music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getId() + ".mp3");// 文件名
+                    music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getSourceId() + ".mp3");// 文件名
 
                     String hash = object.getString("hash");
                     String hash320 = object.getString("320hash");

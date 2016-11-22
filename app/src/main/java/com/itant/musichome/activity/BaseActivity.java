@@ -65,4 +65,10 @@ public class BaseActivity extends Activity {
             rl_back.setVisibility(View.GONE);
         }
     }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition( R.anim.slide_left_in,R.anim.slide_right_out);
+    }
 }

@@ -123,7 +123,7 @@ public class KmeMusic {
                         item.MvUrl = "http://antiserver.kuwo.cn/anti.s?response=url&type=convert_url&format=mkv&rid=" + item.SongId;
                     }*/
                     music.setBitrate(bitrate);// 音质
-                    music.setFileName(music.getName() + "-" + music.getSinger() + extension);// 文件名
+                    music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getSourceId() + extension);// 文件名
 
                     music.setMp3Url(mp3Url);// 下载地址
 

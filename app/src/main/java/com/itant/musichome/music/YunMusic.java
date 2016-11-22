@@ -93,7 +93,7 @@ public class YunMusic {
                     Music music = new Music();
                     music.setMusicType(3);// 音乐来源
                     music.setSourceId(object.getString("id"));// 歌曲ID
-                    music.setId("yun" + object.getString("id"));// 歌曲ID
+                    music.setId("yun" + music.getSourceId());// 歌曲ID
                     music.setSinger("未知");// 歌手
 
                     try {
@@ -176,7 +176,7 @@ public class YunMusic {
                     }
 
                     music.setMp3Url(url);// 下载地址
-                    music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getId() + ".mp3");// 文件名
+                    music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getSourceId() + ".mp3");// 文件名
 
                     // 文件路径
                     music.setFilePath(Constants.PATH_YUN + music.getFileName());

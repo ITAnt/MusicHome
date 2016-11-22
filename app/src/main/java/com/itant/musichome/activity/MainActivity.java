@@ -8,7 +8,10 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -32,6 +35,7 @@ import com.itant.musichome.music.QieMusic;
 import com.itant.musichome.music.XiaMusic;
 import com.itant.musichome.music.XiongMusic;
 import com.itant.musichome.music.YunMusic;
+import com.itant.musichome.utils.ActivityTool;
 import com.itant.musichome.utils.ToastTools;
 import com.umeng.analytics.MobclickAgent;
 
@@ -128,6 +132,34 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         //Constants.MUSIC_TASKS = new HashMap<>();
 
         et_key = (EditText) findViewById(R.id.et_key);
+        // 不能输入空格
+        InputFilter filter = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                //返回null表示接收输入的字符,返回空字符串表示不接受输入的字符
+                if (TextUtils.equals(source, " ")) {
+                    return "";
+                }
+
+                if (TextUtils.equals(source, "  ")) {
+                    return "";
+                }
+                return null;
+            }
+        };
+        et_key.setFilters(new InputFilter[]{filter});
+        et_key.setOnKeyListener(new View.OnKeyListener() {
+
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    // 搜索
+                    onSearchClicked();
+                }
+                return false;
+            }
+        });
 
         lv_music = (ListView) findViewById(R.id.lv_music);
         musics = new ArrayList<>();
@@ -220,79 +252,82 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.rl_about:
-                // 在父类做动画===================
+                // 在父类做动画
                 MobclickAgent.onEvent(this, "About");// 统计关于
-                startActivity(new Intent(this, AboutActivity.class));
+                ActivityTool.startActivity(this, new Intent(this, AboutActivity.class));
                 break;
 
             case R.id.rl_task:
                 MobclickAgent.onEvent(this, "Task");// 查看下载列表
-                startActivity(new Intent(this, TaskActivity.class));
+                ActivityTool.startActivity(this, new Intent(this, TaskActivity.class));
                 break;
 
             case R.id.bb_search:
-                MobclickAgent.onEvent(this, "Search");// 统计搜索次数
-                // 收起软键盘并搜索
-                inputMethodManager.hideSoftInputFromWindow(et_key.getWindowToken(), 0); //强制隐藏键盘
-                keyWords = et_key.getText().toString();
-                if (TextUtils.isEmpty(keyWords)) {
-                    ToastTools.toastShort(this, "关键字不能为空");
-                    return;
-                }
-
-                // 加载中
-                if (musics != null) {
-                    musics.clear();
-                }
-                musicAdapter.notifyDataSetChanged();
-                loadingDialog.show();
-
-                try {
-                    switch (index) {
-                        case 0:
-                            // 搜索小狗
-                            MobclickAgent.onEvent(this, "Dog");// 搜索小狗
-                            DogMusic.getInstance().getDogSongs(musics, keyWords);
-                            break;
-                        case 1:
-                            // 搜索凉我
-                            MobclickAgent.onEvent(this, "Kwo");// 统计凉窝
-                            KmeMusic.getInstance().getDogSongs(musics, keyWords);
-                            break;
-                        case 2:
-                            // 搜索企鹅
-                            MobclickAgent.onEvent(this, "Qie");// 统计企鹅
-                            QieMusic.getInstance().getQieSongs(musics, keyWords);
-                            break;
-                        case 3:
-                            // 搜索白云
-                            MobclickAgent.onEvent(this, "Yun");// 统计白云
-                            YunMusic.getInstance().getYunSongs(musics, keyWords);
-                            break;
-                        case 4:
-                            // 搜索熊掌
-                            MobclickAgent.onEvent(this, "Xiong");// 统计熊掌
-                            XiongMusic.getInstance().getXiongSongs(musics, keyWords);
-                            break;
-
-                        case 5:
-                            // 搜索龙虾
-                            MobclickAgent.onEvent(this, "Xia");// 统计龙虾
-                            XiaMusic.getInstance().getXiaSongs(musics, keyWords);
-                            break;
-                        default:
-                            // 搜索小狗
-                            break;
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    ToastTools.toastShort(MainActivity.this, "歌曲有误");
-                    loadingDialog.dismiss();
-                }
-
+                onSearchClicked();
                 break;
             default:
                 break;
+        }
+    }
+
+    private void onSearchClicked() {
+        MobclickAgent.onEvent(this, "Search");// 统计搜索次数
+        // 收起软键盘并搜索
+        inputMethodManager.hideSoftInputFromWindow(et_key.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS); //强制隐藏键盘
+        keyWords = et_key.getText().toString().replaceAll(" ", "");
+        if (TextUtils.isEmpty(keyWords)) {
+            ToastTools.toastShort(this, "关键字不能为空");
+            return;
+        }
+
+        // 加载中
+        if (musics != null) {
+            musics.clear();
+        }
+        musicAdapter.notifyDataSetChanged();
+        loadingDialog.show();
+
+        try {
+            switch (index) {
+                case 0:
+                    // 搜索小狗
+                    MobclickAgent.onEvent(this, "Dog");// 搜索小狗
+                    DogMusic.getInstance().getDogSongs(musics, keyWords);
+                    break;
+                case 1:
+                    // 搜索凉我
+                    MobclickAgent.onEvent(this, "Kwo");// 统计凉窝
+                    KmeMusic.getInstance().getDogSongs(musics, keyWords);
+                    break;
+                case 2:
+                    // 搜索企鹅
+                    MobclickAgent.onEvent(this, "Qie");// 统计企鹅
+                    QieMusic.getInstance().getQieSongs(musics, keyWords);
+                    break;
+                case 3:
+                    // 搜索白云
+                    MobclickAgent.onEvent(this, "Yun");// 统计白云
+                    YunMusic.getInstance().getYunSongs(musics, keyWords);
+                    break;
+                case 4:
+                    // 搜索熊掌
+                    MobclickAgent.onEvent(this, "Xiong");// 统计熊掌
+                    XiongMusic.getInstance().getXiongSongs(musics, keyWords);
+                    break;
+
+                case 5:
+                    // 搜索龙虾
+                    MobclickAgent.onEvent(this, "Xia");// 统计龙虾
+                    XiaMusic.getInstance().getXiaSongs(musics, keyWords);
+                    break;
+                default:
+                    // 搜索小狗
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ToastTools.toastShort(MainActivity.this, "歌曲有误");
+            loadingDialog.dismiss();
         }
     }
 
@@ -361,8 +396,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             e.printStackTrace();
         }
 
-        ToastTools.toastShort(getApplicationContext(), "下载" + music.getFileName());
-
+        ToastTools.toastShort(getApplicationContext(), "下载" + music.getName());
         switch (music.getMusicType()) {
             case 0:
                 // 小狗，步骤多一步，必须先获取真正的下载地址
@@ -472,6 +506,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     /**
      * 下载音乐
+     *
      * @param music
      */
     private void downloadMusic(final Music music) {
@@ -487,7 +522,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
             @Override
             public void onSuccess(File result) {
-                ToastTools.toastShort(getApplicationContext(), music.getFileName() + "下载成功啦");
+                ToastTools.toastShort(getApplicationContext(), music.getName() + "下载成功");
                 music.setProgress(100);
                 try {
                     MusicApplication.db.update(music, "progress");

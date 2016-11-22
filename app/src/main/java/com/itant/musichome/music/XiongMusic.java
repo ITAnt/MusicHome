@@ -155,7 +155,7 @@ public class XiongMusic {
                                 Music music = new Music();
                                 music.setMusicType(4);// 音乐来源
                                 music.setSourceId(info.getString("queryId"));// 歌曲ID
-                                music.setId("xiong" + info.getString("queryId"));// 歌曲ID
+                                music.setId("xiong" + music.getSourceId());// 歌曲ID
                                 music.setName(info.getString("songName"));// 歌名
                                 music.setSinger(info.getString("artistName"));// 歌手
                                 music.setAlbum(info.getString("albumName"));// 专辑
@@ -163,7 +163,7 @@ public class XiongMusic {
 
                                 music.setBitrate(info.getString("rate"));// 音质
                                 String format = info.getString("format");
-                                music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getId() + "." +format);// 文件名
+                                music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getSourceId() + "." +format);// 文件名
 
 
                                 music.setMp3Url(info.getString("songLink"));// 下载地址

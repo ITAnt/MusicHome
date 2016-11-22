@@ -225,7 +225,7 @@ public class XiaMusic {
                                 music.setMusicType(5);// 音乐来源
                                 music.setSourceId(info.getString("songId"));// 歌曲最原始的ID
                                 music.setMusicTime(info.getString("length"));// 音乐时长
-                                music.setId("xia" + info.getString("songId"));// 歌曲ID
+                                music.setId("xia" + music.getSourceId());// 歌曲ID
                                 music.setName(info.getString("songName"));// 歌名
                                 music.setSinger(info.getString("singers"));// 歌手
                                 music.setAlbum(info.getString("album_name"));// 专辑
@@ -233,7 +233,7 @@ public class XiaMusic {
                                 String format = ".mp3";
                                 music.setMp3Url(info.getString("location"));// 下载地址
 
-                                music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getId() + format);// 文件名
+                                music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getSourceId() + format);// 文件名
 
 
                                 // 文件路径

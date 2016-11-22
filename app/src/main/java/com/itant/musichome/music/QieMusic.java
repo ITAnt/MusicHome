@@ -115,16 +115,17 @@ public class QieMusic {
 
                     Music music = new Music();// 音乐来源
                     music.setMusicType(2);
-                    // 音乐的唯一ID
-                    music.setSourceId(String.valueOf(System.currentTimeMillis()));// ===========这个不是真的
-                    music.setId("qie" + String.valueOf(System.currentTimeMillis()));
+                    music.setSourceId(String.valueOf(System.currentTimeMillis()));// 歌曲ID
+                    music.setId("qie" + music.getSourceId());
                     if (f.contains("@@")) {
                         music.setBitrate("128");
                         String[] infos = f.split("@@");
                         if (infos == null) {
                             continue;
                         }
-                        music.setId(infos[0].trim());// 歌曲ID
+                        // 音乐的唯一ID
+                        music.setSourceId(infos[0].trim());// 歌曲ID
+                        music.setId("qie"+music.getSourceId());// 歌曲ID
                         music.setName(infos[1].trim());// 歌名
                         String singer1 = object.getString("fsinger");
                         String singer2 = object.getString("fsinger2");
@@ -135,13 +136,14 @@ public class QieMusic {
                         music.setAlbum("");// 专辑
                         music.setMp3Url(infos[infos.length-4]);// 下载地址
 
-                        music.setFileName(music.getName() + "-" + music.getSinger() + ".m4a");// 文件名
+                        music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getSourceId() + ".m4a");// 文件名
                     } else {
                         String[] infos = f.split("\\|");
                         if (infos == null) {
                             continue;
                         }
-                        music.setId(infos[0].trim());// 歌曲ID
+                        music.setSourceId(infos[0].trim());// 歌曲ID
+                        music.setId("qie"+music.getSourceId());// 歌曲ID
                         music.setName(object.getString("fsong"));// 歌名
                         String singer1 = object.getString("fsinger");
                         String singer2 = object.getString("fsinger2");
@@ -172,7 +174,7 @@ public class QieMusic {
                         }
 
                         String suffix = music.getMp3Url().substring(music.getMp3Url().lastIndexOf("."), music.getMp3Url().length());
-                        music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getId() + suffix);// 文件名
+                        music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getSourceId() + suffix);// 文件名
 
                         // 音乐相册
                         try {
