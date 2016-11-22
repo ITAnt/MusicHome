@@ -148,6 +148,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         };
         et_key.setFilters(new InputFilter[]{filter});
+        // 点击回车则搜索(onSearchClicked方法有隐藏键盘)
         et_key.setOnKeyListener(new View.OnKeyListener() {
 
             @Override
