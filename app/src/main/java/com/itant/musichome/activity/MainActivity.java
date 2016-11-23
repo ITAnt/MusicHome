@@ -137,9 +137,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
                 //返回null表示接收输入的字符,返回空字符串表示不接受输入的字符
-                if (TextUtils.equals(source, " ")) {
+                /*if (TextUtils.equals(source, " ")) {
                     return "";
-                }
+                }*/
 
                 if (TextUtils.equals(source, "  ")) {
                     return "";
