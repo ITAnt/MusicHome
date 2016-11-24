@@ -6,4 +6,7 @@
     <color name="white">#FFFFFF</color>
     <color name="gray">#a9a9a9</color>
     <color name="gray_transparent">#88a9a9a9</color>
+
+    <color name="holo_blue">#FF33E5B5</color>
+    <color name="bg_btn">#ec971f</color>
 </resources>
