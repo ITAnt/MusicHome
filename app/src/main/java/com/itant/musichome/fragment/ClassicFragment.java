@@ -3,7 +3,6 @@ package com.itant.musichome.fragment;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -20,26 +19,22 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.itant.musichome.MusicApplication;
 import com.itant.musichome.R;
-import com.itant.musichome.activity.AboutActivity;
-import com.itant.musichome.activity.TaskActivity;
 import com.itant.musichome.adapter.MusicAdapter;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
-import com.itant.musichome.music.DogMusic;
-import com.itant.musichome.music.KmeMusic;
-import com.itant.musichome.music.QieMusic;
-import com.itant.musichome.music.XiaMusic;
-import com.itant.musichome.music.XiongMusic;
-import com.itant.musichome.music.YunMusic;
-import com.itant.musichome.utils.ActivityTool;
-import com.itant.musichome.utils.ToastTools;
+import com.itant.musichome.music.classic.DogMusic;
+import com.itant.musichome.music.classic.KmeMusic;
+import com.itant.musichome.music.classic.QieMusic;
+import com.itant.musichome.music.classic.XiaMusic;
+import com.itant.musichome.music.classic.XiongMusic;
+import com.itant.musichome.music.classic.YunMusic;
+import com.itant.musichome.utils.ToastTool;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -54,11 +49,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClassicFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, RadioGroup.OnCheckedChangeListener {
-	private static String[] REQUIRED_PERMISSIONS = {
-			Manifest.permission.READ_EXTERNAL_STORAGE,
-			Manifest.permission.WRITE_EXTERNAL_STORAGE
-	};
-
 
 	private ListView lv_music;
 	private MusicAdapter musicAdapter;
@@ -66,36 +56,16 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 
 
 
-	private int index = 0;// 0小狗 1凉窝 2企鹅 3白云 4熊掌 5
+	private int index = 0;// 0小狗 1凉窝 2企鹅 3白云 4熊掌 5龙虾
 	private String keyWords;// 搜索的关键字，一般为歌曲名
 	private EditText et_key;
 
 	private InputMethodManager inputMethodManager;
 	private AlertDialog loadingDialog;
 
-	/**
-	 * 初始化权限
-	 */
-	private void initPermission() {
-		int permission = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-		if (permission != PackageManager.PERMISSION_GRANTED) {
-			// We don't have permission so prompt the user
-			ActivityCompat.requestPermissions(
-					getActivity(),
-					REQUIRED_PERMISSIONS,
-					1
-			);
-		}
-	}
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_main, container, false);
-
-		// 申请6.0的权限，如果拒绝了，则退出应用
-		if (android.os.Build.VERSION.SDK_INT >= 23) {
-			initPermission();
-		}
 
 		// 初始化文件夹目录
 		initDirectory();
@@ -156,34 +126,7 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 		return view;
 	}
 
-	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if (requestCode == 1) {
-			int grantResult = grantResults[0];
-			boolean granted = grantResult == PackageManager.PERMISSION_GRANTED;
 
-			if (!granted) {
-				MobclickAgent.onEvent(getActivity(), "Permission");// 统计权限拒绝次数
-
-				final AlertDialog dialog = new AlertDialog.Builder(getActivity()).create();
-				dialog.show();
-				dialog.setContentView(R.layout.dialog_permission);
-				dialog.setCancelable(false);
-				dialog.setCanceledOnTouchOutside(false);
-
-				BootstrapButton bb_confirm = (BootstrapButton) dialog.findViewById(R.id.bb_confirm);
-				bb_confirm.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						dialog.cancel();
-						// 退出
-						System.exit(0);
-					}
-				});
-			}
-		}
-	}
 
 	private void initDialog() {
 		loadingDialog = new AlertDialog.Builder(getActivity()).create();
@@ -198,39 +141,39 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 	 * 初始化文件夹目录
 	 */
 	private void initDirectory() {
-		Constants.PATH_DOG = Constants.PATH_DOWNLOAD + "dog/";
-		Constants.PATH_KWO = Constants.PATH_DOWNLOAD + "lwo/";
-		Constants.PATH_QIE = Constants.PATH_DOWNLOAD + "qie/";
-		Constants.PATH_YUN = Constants.PATH_DOWNLOAD + "yun/";
-		Constants.PATH_XIONG = Constants.PATH_DOWNLOAD + "xiong/";
-		Constants.PATH_XIA = Constants.PATH_DOWNLOAD + "xia/";
+		Constants.PATH_CLASSIC_DOG = Constants.PATH_DOWNLOAD + "classic/dog/";
+		Constants.PATH_CLASSIC_KWO = Constants.PATH_DOWNLOAD + "classic/lwo/";
+		Constants.PATH_CLASSIC_QIE = Constants.PATH_DOWNLOAD + "classic/qie/";
+		Constants.PATH_CLASSIC_YUN = Constants.PATH_DOWNLOAD + "classic/yun/";
+		Constants.PATH_CLASSIC_XIONG = Constants.PATH_DOWNLOAD + "classic/xiong/";
+		Constants.PATH_CLASSIC_XIA = Constants.PATH_DOWNLOAD + "classic/xia/";
 
-		File file = new File(Constants.PATH_DOG);
+		File file = new File(Constants.PATH_CLASSIC_DOG);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
 
-		file = new File(Constants.PATH_KWO);
+		file = new File(Constants.PATH_CLASSIC_KWO);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
 
-		file = new File(Constants.PATH_QIE);
+		file = new File(Constants.PATH_CLASSIC_QIE);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
 
-		file = new File(Constants.PATH_YUN);
+		file = new File(Constants.PATH_CLASSIC_YUN);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
 
-		file = new File(Constants.PATH_XIONG);
+		file = new File(Constants.PATH_CLASSIC_XIONG);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
 
-		file = new File(Constants.PATH_XIA);
+		file = new File(Constants.PATH_CLASSIC_XIA);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
@@ -256,7 +199,7 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 		inputMethodManager.hideSoftInputFromWindow(et_key.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS); //强制隐藏键盘
 		keyWords = et_key.getText().toString().replaceAll(" ", "");
 		if (TextUtils.isEmpty(keyWords)) {
-			ToastTools.toastShort(getActivity(), "关键字不能为空");
+			ToastTool.toastShort(getActivity(), "关键字不能为空");
 			return;
 		}
 
@@ -306,7 +249,7 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			ToastTools.toastShort(getActivity(), "歌曲有误");
+			ToastTool.toastShort(getActivity(), "歌曲有误");
 			loadingDialog.dismiss();
 		}
 	}
@@ -349,24 +292,24 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 
 	private void onDownloadClick(final Music music) {
 		if (TextUtils.isEmpty(music.getMp3Url())) {
-			ToastTools.toastShort(getActivity(), "没有相应的下载地址");
+			ToastTool.toastShort(getActivity(), "没有相应的下载地址");
 			return;
 		}
 
 		File localFile = new File(music.getFilePath());
-		if (localFile.exists()) {
-			ToastTools.toastShort(getActivity(), "该歌曲已下载完成");
+		if (localFile != null && localFile.exists()) {
+			ToastTool.toastShort(getActivity(), "该歌曲已下载完成");
 			return;
 		}
 
 		try {
 			Music dbMusic = MusicApplication.db.selector(Music.class).where("id", "=", music.getId()).findFirst();
 			if (dbMusic != null) {
-				ToastTools.toastShort(getActivity(), "这首歌曲已经在下载列表中了");
+				ToastTool.toastShort(getActivity(), "这首歌曲已经在下载列表中了");
 				return;
 			}
 		} catch (Exception e) {
-			ToastTools.toastShort(getActivity(), "这首歌曲已经在下载列表中了");
+			ToastTool.toastShort(getActivity(), "这首歌曲已经在下载列表中了");
 			return;
 		}
 
@@ -376,7 +319,7 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 			e.printStackTrace();
 		}
 
-		ToastTools.toastShort(getActivity(), "下载" + music.getName());
+		ToastTool.toastShort(getActivity(), "下载" + music.getName());
 		switch (music.getMusicType()) {
 			case 0:
 				// 小狗，步骤多一步，必须先获取真正的下载地址
@@ -390,7 +333,7 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 					public void onSuccess(String result) {
 						JSONObject jsonObject = JSON.parseObject(result);
 						if (jsonObject == null) {
-							ToastTools.toastShort(getActivity(), "没有相应的下载地址");
+							ToastTool.toastShort(getActivity(), "没有相应的下载地址");
 							return;
 						}
 
@@ -408,7 +351,7 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 
 					@Override
 					public void onError(Throwable ex, boolean isOnCallback) {
-						ToastTools.toastShort(getActivity(), "这首歌不能下载了");
+						ToastTool.toastShort(getActivity(), "这首歌不能下载了");
 					}
 
 					@Override
@@ -445,7 +388,7 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 
 					@Override
 					public void onError(Throwable ex, boolean isOnCallback) {
-						ToastTools.toastShort(getActivity(), "这首歌不能下载了");
+						ToastTool.toastShort(getActivity(), "这首歌不能下载了");
 					}
 
 					@Override
@@ -502,7 +445,7 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 
 			@Override
 			public void onSuccess(File result) {
-				ToastTools.toastShort(getActivity(), music.getName() + "下载成功");
+				ToastTool.toastShort(getActivity(), music.getName() + "下载成功");
 				music.setProgress(100);
 				try {
 					MusicApplication.db.update(music, "progress");
@@ -513,7 +456,7 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 
 			@Override
 			public void onError(Throwable ex, boolean isOnCallback) {
-				ToastTools.toastShort(getActivity(), "错误：" + ex.toString());
+				ToastTool.toastShort(getActivity(), "错误：" + ex.toString());
 			}
 
 			@Override

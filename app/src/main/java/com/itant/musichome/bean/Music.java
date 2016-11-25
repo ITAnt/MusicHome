@@ -50,6 +50,27 @@ public class Music {
     @Column(name = "musicType")
     private int musicType;// 音乐来源 0小狗、1凉窝、2企鹅、3白云
 
+    @Column(name = "flacUrl")
+    private String flacUrl;// flac地址
+
+    @Column(name = "apeUrl")
+    private String apeUrl;// ape地址
+
+    @Column(name = "sqUrl")
+    private String sqUrl;// SQ地址
+
+    @Column(name = "hqUrl")
+    private String hqUrl;// HQ地址
+    @Column(name = "lqUrl")
+    private String lqUrl;// LQ地址
+    @Column(name = "mvUrl")
+    private String mvUrl;// MV地址
+    @Column(name = "videoUrl")
+    private String videoUrl;// 视频地址
+
+    /*@Column(name = "engine")
+    private String engine;// 引擎*/
+
     public String getName() {
         return name;
     }
@@ -161,4 +182,68 @@ public class Music {
     public void setMusicTime(String musicTime) {
         this.musicTime = musicTime;
     }
+
+    public String getFlacUrl() {
+        return flacUrl;
+    }
+
+    public void setFlacUrl(String flacUrl) {
+        this.flacUrl = flacUrl;
+    }
+
+    public String getApeUrl() {
+        return apeUrl;
+    }
+
+    public void setApeUrl(String apeUrl) {
+        this.apeUrl = apeUrl;
+    }
+
+    public String getSqUrl() {
+        return sqUrl;
+    }
+
+    public void setSqUrl(String sqUrl) {
+        this.sqUrl = sqUrl;
+    }
+
+    public String getHqUrl() {
+        return hqUrl;
+    }
+
+    public void setHqUrl(String hqUrl) {
+        this.hqUrl = hqUrl;
+    }
+
+    public String getLqUrl() {
+        return lqUrl;
+    }
+
+    public void setLqUrl(String lqUrl) {
+        this.lqUrl = lqUrl;
+    }
+
+    public String getMvUrl() {
+        return mvUrl;
+    }
+
+    public void setMvUrl(String mvUrl) {
+        this.mvUrl = mvUrl;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
+    /*public String getEngine() {
+        return engine;
+    }
+
+    public void setEngine(String engine) {
+        this.engine = engine;
+    }*/
 }

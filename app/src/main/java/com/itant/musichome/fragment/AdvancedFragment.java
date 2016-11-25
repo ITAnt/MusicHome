@@ -18,9 +18,9 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -32,14 +32,16 @@ import com.itant.musichome.activity.TaskActivity;
 import com.itant.musichome.adapter.MusicAdapter;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
-import com.itant.musichome.music.DogMusic;
-import com.itant.musichome.music.KmeMusic;
-import com.itant.musichome.music.QieMusic;
-import com.itant.musichome.music.XiaMusic;
-import com.itant.musichome.music.XiongMusic;
-import com.itant.musichome.music.YunMusic;
+import com.itant.musichome.music.advanced.AdvancedMusic;
+import com.itant.musichome.music.classic.DogMusic;
+import com.itant.musichome.music.classic.KmeMusic;
+import com.itant.musichome.music.classic.QieMusic;
+import com.itant.musichome.music.classic.XiaMusic;
+import com.itant.musichome.music.classic.XiongMusic;
+import com.itant.musichome.music.classic.YunMusic;
 import com.itant.musichome.utils.ActivityTool;
-import com.itant.musichome.utils.ToastTools;
+import com.itant.musichome.utils.FileTool;
+import com.itant.musichome.utils.ToastTool;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -54,46 +56,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdvancedFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, RadioGroup.OnCheckedChangeListener {
-	private static String[] REQUIRED_PERMISSIONS = {
-			Manifest.permission.READ_EXTERNAL_STORAGE,
-			Manifest.permission.WRITE_EXTERNAL_STORAGE
-	};
-
-
 	private ListView lv_music;
 	private MusicAdapter musicAdapter;
 	private List<Music> musics;
 
-	private int index = 0;// 0小狗 1凉窝 2企鹅 3白云 4熊掌 5
+	private int index = 0;// 0小狗 1凉窝 2企鹅 3白云 4熊掌 5龙虾
 	private String keyWords;// 搜索的关键字，一般为歌曲名
 	private EditText et_key;
 
 	private InputMethodManager inputMethodManager;
 	private AlertDialog loadingDialog;
 
-	/**
-	 * 初始化权限
-	 */
-	private void initPermission() {
-		int permission = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-		if (permission != PackageManager.PERMISSION_GRANTED) {
-			// We don't have permission so prompt the user
-			ActivityCompat.requestPermissions(
-					getActivity(),
-					REQUIRED_PERMISSIONS,
-					1
-			);
-		}
-	}
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_main, container, false);
-
-		// 申请6.0的权限，如果拒绝了，则退出应用
-		if (android.os.Build.VERSION.SDK_INT >= 23) {
-			initPermission();
-		}
 
 		// 初始化文件夹目录
 		initDirectory();
@@ -140,7 +116,8 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 		musicAdapter.setOnDownloadClickListener(new MusicAdapter.OnDownloadClickListener() {
 			@Override
 			public void onIconClick(int position) {
-				onDownloadClick(musics.get(position));
+				//onDownloadClick(musics.get(position));
+				chooseBitRate(musics.get(position));
 			}
 		});
 
@@ -152,35 +129,6 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 
 		initDialog();
 		return view;
-	}
-
-	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if (requestCode == 1) {
-			int grantResult = grantResults[0];
-			boolean granted = grantResult == PackageManager.PERMISSION_GRANTED;
-
-			if (!granted) {
-				MobclickAgent.onEvent(getActivity(), "Permission");// 统计权限拒绝次数
-
-				final AlertDialog dialog = new AlertDialog.Builder(getActivity()).create();
-				dialog.show();
-				dialog.setContentView(R.layout.dialog_permission);
-				dialog.setCancelable(false);
-				dialog.setCanceledOnTouchOutside(false);
-
-				BootstrapButton bb_confirm = (BootstrapButton) dialog.findViewById(R.id.bb_confirm);
-				bb_confirm.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						dialog.cancel();
-						// 退出
-						System.exit(0);
-					}
-				});
-			}
-		}
 	}
 
 	private void initDialog() {
@@ -196,39 +144,39 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 	 * 初始化文件夹目录
 	 */
 	private void initDirectory() {
-		Constants.PATH_DOG = Constants.PATH_DOWNLOAD + "dog/";
-		Constants.PATH_KWO = Constants.PATH_DOWNLOAD + "lwo/";
-		Constants.PATH_QIE = Constants.PATH_DOWNLOAD + "qie/";
-		Constants.PATH_YUN = Constants.PATH_DOWNLOAD + "yun/";
-		Constants.PATH_XIONG = Constants.PATH_DOWNLOAD + "xiong/";
-		Constants.PATH_XIA = Constants.PATH_DOWNLOAD + "xia/";
+		Constants.PATH_ADVANCED_DOG = Constants.PATH_DOWNLOAD + "advanced/dog/";
+		Constants.PATH_ADVANCED_KWO = Constants.PATH_DOWNLOAD + "advanced/lwo/";
+		Constants.PATH_ADVANCED_QIE = Constants.PATH_DOWNLOAD + "advanced/qie/";
+		Constants.PATH_ADVANCED_YUN = Constants.PATH_DOWNLOAD + "advanced/yun/";
+		Constants.PATH_ADVANCED_XIONG = Constants.PATH_DOWNLOAD + "advanced/xiong/";
+		Constants.PATH_ADVANCED_XIA = Constants.PATH_DOWNLOAD + "advanced/xia/";
 
-		File file = new File(Constants.PATH_DOG);
+		File file = new File(Constants.PATH_ADVANCED_DOG);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
 
-		file = new File(Constants.PATH_KWO);
+		file = new File(Constants.PATH_ADVANCED_KWO);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
 
-		file = new File(Constants.PATH_QIE);
+		file = new File(Constants.PATH_ADVANCED_QIE);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
 
-		file = new File(Constants.PATH_YUN);
+		file = new File(Constants.PATH_ADVANCED_YUN);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
 
-		file = new File(Constants.PATH_XIONG);
+		file = new File(Constants.PATH_ADVANCED_XIONG);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
 
-		file = new File(Constants.PATH_XIA);
+		file = new File(Constants.PATH_ADVANCED_XIA);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
@@ -263,7 +211,7 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 		inputMethodManager.hideSoftInputFromWindow(et_key.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS); //强制隐藏键盘
 		keyWords = et_key.getText().toString().replaceAll(" ", "");
 		if (TextUtils.isEmpty(keyWords)) {
-			ToastTools.toastShort(getActivity(), "关键字不能为空");
+			ToastTool.toastShort(getActivity(), "关键字不能为空");
 			return;
 		}
 
@@ -278,34 +226,34 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 			switch (index) {
 				case 0:
 					// 搜索小狗
-					MobclickAgent.onEvent(getActivity(), "Dog");// 搜索小狗
-					DogMusic.getInstance().getDogSongs(musics, keyWords);
+					MobclickAgent.onEvent(getActivity(), "Dog_AD");// 搜索小狗
+					AdvancedMusic.getInstance().getAdvancedSongs(musics, parent, 0, "kg", 1, keyWords);
 					break;
 				case 1:
 					// 搜索凉我
-					MobclickAgent.onEvent(getActivity(), "Kwo");// 统计凉窝
-					KmeMusic.getInstance().getDogSongs(musics, keyWords);
+					MobclickAgent.onEvent(getActivity(), "Kwo_AD");// 统计凉窝
+					AdvancedMusic.getInstance().getAdvancedSongs(musics, parent, 1, "kw", 1, keyWords);
 					break;
 				case 2:
 					// 搜索企鹅
-					MobclickAgent.onEvent(getActivity(), "Qie");// 统计企鹅
-					QieMusic.getInstance().getQieSongs(musics, keyWords);
+					MobclickAgent.onEvent(getActivity(), "Qie_AD");// 统计企鹅
+					AdvancedMusic.getInstance().getAdvancedSongs(musics, parent, 2, "qq", 1, keyWords);
 					break;
 				case 3:
 					// 搜索白云
-					MobclickAgent.onEvent(getActivity(), "Yun");// 统计白云
-					YunMusic.getInstance().getYunSongs(musics, keyWords);
+					MobclickAgent.onEvent(getActivity(), "Yun_AD");// 统计白云
+					AdvancedMusic.getInstance().getAdvancedSongs(musics, parent, 3, "wy", 1, keyWords);
 					break;
 				case 4:
 					// 搜索熊掌
-					MobclickAgent.onEvent(getActivity(), "Xiong");// 统计熊掌
-					XiongMusic.getInstance().getXiongSongs(musics, keyWords);
+					MobclickAgent.onEvent(getActivity(), "Xiong_AD");// 统计熊掌
+					AdvancedMusic.getInstance().getAdvancedSongs(musics, parent, 4, "bd", 1, keyWords);
 					break;
 
 				case 5:
 					// 搜索龙虾
-					MobclickAgent.onEvent(getActivity(), "Xia");// 统计龙虾
-					XiaMusic.getInstance().getXiaSongs(musics, keyWords);
+					MobclickAgent.onEvent(getActivity(), "Xia_AD");// 统计龙虾
+					AdvancedMusic.getInstance().getAdvancedSongs(musics, parent, 5, "xm", 1, keyWords);
 					break;
 				default:
 					// 搜索小狗
@@ -313,36 +261,44 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			ToastTools.toastShort(getActivity(), "歌曲有误");
+			ToastTool.toastShort(getActivity(), "歌曲有误");
 			loadingDialog.dismiss();
 		}
 	}
 
+	private String parent = Constants.PATH_ADVANCED_YUN;
 	@Override
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
 		switch (checkedId) {
 			case R.id.rb_dog:
 				index = 0;
+				parent = Constants.PATH_ADVANCED_DOG;
 				break;
 			case R.id.rb_lwo:
+				parent = Constants.PATH_ADVANCED_KWO;
 				index = 1;
 				break;
 			case R.id.rb_qie:
 				index = 2;
+				parent = Constants.PATH_ADVANCED_QIE;
 				break;
 			case R.id.rb_yun:
 				index = 3;
+				parent = Constants.PATH_ADVANCED_YUN;
 				break;
 
 			case R.id.rb_xiong:
 				index = 4;
+				parent = Constants.PATH_ADVANCED_XIONG;
 				break;
 
 			case R.id.rb_xia:
 				index = 5;
+				parent = Constants.PATH_ADVANCED_XIA;
 				break;
 			default:
 				index = 0;
+				parent = Constants.PATH_ADVANCED_YUN;
 				break;
 		}
 	}
@@ -351,144 +307,11 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		MobclickAgent.onEvent(getActivity(), "Download");// 统计下载次数
 		Music music = musics.get(position);
-		onDownloadClick(music);
-	}
 
-	private void onDownloadClick(final Music music) {
-		if (TextUtils.isEmpty(music.getMp3Url())) {
-			ToastTools.toastShort(getActivity(), "没有相应的下载地址");
-			return;
-		}
+		chooseBitRate(music);// 选择音质
 
-		File localFile = new File(music.getFilePath());
-		if (localFile.exists()) {
-			ToastTools.toastShort(getActivity(), "该歌曲已下载完成");
-			return;
-		}
-
-		try {
-			Music dbMusic = MusicApplication.db.selector(Music.class).where("id", "=", music.getId()).findFirst();
-			if (dbMusic != null) {
-				ToastTools.toastShort(getActivity(), "这首歌曲已经在下载列表中了");
-				return;
-			}
-		} catch (Exception e) {
-			ToastTools.toastShort(getActivity(), "这首歌曲已经在下载列表中了");
-			return;
-		}
-
-		try {
-			MusicApplication.db.save(music);
-		} catch (DbException e) {
-			e.printStackTrace();
-		}
-
-		ToastTools.toastShort(getActivity(), "下载" + music.getName());
-		switch (music.getMusicType()) {
-			case 0:
-				// 小狗，步骤多一步，必须先获取真正的下载地址
-				org.xutils.http.RequestParams params = new org.xutils.http.RequestParams(music.getMp3Url());
-				params.setExecutor(Constants.EXECUTOR_MUSIC);
-				params.setCancelFast(true);
-
-				x.http().get(params, new Callback.CommonCallback<String>() {
-
-					@Override
-					public void onSuccess(String result) {
-						JSONObject jsonObject = JSON.parseObject(result);
-						if (jsonObject == null) {
-							ToastTools.toastShort(getActivity(), "没有相应的下载地址");
-							return;
-						}
-
-						String url = jsonObject.getString("url");
-						if (!TextUtils.isEmpty(url)) {
-							music.setMp3Url(url);
-							try {
-								MusicApplication.db.update(music, "mp3Url");
-							} catch (DbException e) {
-								e.printStackTrace();
-							}
-							downloadMusic(music);
-						}
-					}
-
-					@Override
-					public void onError(Throwable ex, boolean isOnCallback) {
-						ToastTools.toastShort(getActivity(), "这首歌不能下载了");
-					}
-
-					@Override
-					public void onCancelled(CancelledException cex) {
-
-					}
-
-					@Override
-					public void onFinished() {
-
-					}
-				});
-				break;
-
-			case 1:
-				// 凉窝
-				// 需要多一步，获取真正的mp3地址
-				org.xutils.http.RequestParams kmeParams = new org.xutils.http.RequestParams(music.getMp3Url());
-				kmeParams.setExecutor(Constants.EXECUTOR_MUSIC);
-				kmeParams.setCancelFast(true);
-
-				x.http().get(kmeParams, new Callback.CommonCallback<String>() {
-
-					@Override
-					public void onSuccess(String result) {
-						music.setMp3Url(result.trim().replaceAll(" ", ""));
-						try {
-							MusicApplication.db.update(music, "mp3Url");
-						} catch (DbException e) {
-							e.printStackTrace();
-						}
-						downloadMusic(music);
-					}
-
-					@Override
-					public void onError(Throwable ex, boolean isOnCallback) {
-						ToastTools.toastShort(getActivity(), "这首歌不能下载了");
-					}
-
-					@Override
-					public void onCancelled(CancelledException cex) {
-
-					}
-
-					@Override
-					public void onFinished() {
-
-					}
-				});
-				break;
-
-			case 2:
-				// 企鹅，直接下
-				downloadMusic(music);
-				break;
-
-			case 3:
-				// 白云，直接下
-				downloadMusic(music);
-				break;
-
-			case 4:
-				// 熊掌，直接下
-				downloadMusic(music);
-				break;
-
-			case 5:
-				// 龙虾，直接下
-				downloadMusic(music);
-				break;
-			default:
-				break;
-		}
+		// 弹出对话框选择地址
+		//onDownloadClick(music);
 	}
 
 	/**
@@ -497,7 +320,13 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 	 * @param music
 	 */
 	private void downloadMusic(final Music music) {
+		File localFile = new File(music.getFilePath());
+		if (localFile != null && localFile.exists()) {
+			ToastTool.toastShort(getActivity(), "该歌曲已下载完成");
+			return;
+		}
 
+		ToastTool.toastShort(getActivity(), "下载" + music.getName());
 		org.xutils.http.RequestParams params = new org.xutils.http.RequestParams(music.getMp3Url());
 		params.setAutoResume(true);
 		params.setAutoRename(false);
@@ -509,7 +338,7 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 
 			@Override
 			public void onSuccess(File result) {
-				ToastTools.toastShort(getActivity(), music.getName() + "下载成功");
+				ToastTool.toastShort(getActivity(), music.getName() + "下载成功");
 				music.setProgress(100);
 				try {
 					MusicApplication.db.update(music, "progress");
@@ -520,7 +349,7 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 
 			@Override
 			public void onError(Throwable ex, boolean isOnCallback) {
-				ToastTools.toastShort(getActivity(), "错误：" + ex.toString());
+				ToastTool.toastShort(getActivity(), "错误：" + ex.toString());
 			}
 
 			@Override
@@ -571,14 +400,136 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onMessageEvent(String event) {
-		if (TextUtils.equals(event, Constants.EVENT_LOAD_COMPLETE)) {
+		if (TextUtils.equals(event, Constants.EVENT_LOAD_COMPLETE_AD)) {
 			// 停止加载动画
 			loadingDialog.dismiss();
 		}
 
-		if (TextUtils.equals(event, Constants.EVENT_UPDATE_MUSICS)) {
+		if (TextUtils.equals(event, Constants.EVENT_UPDATE_MUSICS_AD)) {
 			// 刷新音乐列表
 			musicAdapter.notifyDataSetChanged();
 		}
+	}
+
+	/**
+	 * 选择音质
+	 */
+	private void chooseBitRate(final Music music) {
+
+		final AlertDialog dialog = new AlertDialog.Builder(getActivity()).create();
+		dialog.show();
+		dialog.setContentView(R.layout.dialog_bitrate);
+		dialog.setCancelable(false);
+		dialog.setCanceledOnTouchOutside(false);
+
+		LinearLayout ll_flac = (LinearLayout) dialog.findViewById(R.id.ll_flac);
+		if (!TextUtils.isEmpty(music.getFlacUrl())) {
+			ll_flac.setVisibility(View.VISIBLE);
+			ll_flac.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+
+					dialog.dismiss();
+					onBitrateClicked(music, music.getFlacUrl(), "无损", ".flac");
+				}
+			});
+		} else {
+			ll_flac.setVisibility(View.GONE);
+		}
+
+
+		LinearLayout ll_ape = (LinearLayout) dialog.findViewById(R.id.ll_ape);
+		if (!TextUtils.isEmpty(music.getApeUrl())) {
+			ll_ape.setVisibility(View.VISIBLE);
+			ll_ape.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					dialog.dismiss();
+					onBitrateClicked(music, music.getApeUrl(), "无损", ".ape");
+				}
+			});
+		} else {
+			ll_ape.setVisibility(View.GONE);
+		}
+
+
+		LinearLayout ll_sq = (LinearLayout) dialog.findViewById(R.id.ll_sq);
+		if (!TextUtils.isEmpty(music.getSqUrl())) {
+			ll_sq.setVisibility(View.VISIBLE);
+			ll_sq.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					dialog.dismiss();
+					onBitrateClicked(music, music.getSqUrl(), "320", ".mp3");
+				}
+			});
+		} else {
+			ll_sq.setVisibility(View.GONE);
+		}
+
+		LinearLayout ll_hq = (LinearLayout) dialog.findViewById(R.id.ll_hq);
+		if (!TextUtils.isEmpty(music.getSqUrl())) {
+			ll_hq.setVisibility(View.VISIBLE);
+			ll_hq.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					dialog.dismiss();
+					onBitrateClicked(music, music.getHqUrl(), "192", ".mp3");
+				}
+			});
+		} else {
+			ll_hq.setVisibility(View.GONE);
+		}
+
+		LinearLayout ll_lq = (LinearLayout) dialog.findViewById(R.id.ll_lq);
+		if (!TextUtils.isEmpty(music.getSqUrl())) {
+			ll_hq.setVisibility(View.VISIBLE);
+			ll_lq.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					dialog.dismiss();
+					onBitrateClicked(music, music.getLqUrl(), "128", ".mp3");
+				}
+			});
+		} else {
+			ll_hq.setVisibility(View.GONE);
+		}
+
+		LinearLayout ll_cancel = (LinearLayout) dialog.findViewById(R.id.ll_cancel);
+		ll_cancel.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+	}
+
+	private void onBitrateClicked(Music music, String url, String bitrate, String extension) {
+		try {
+			Music dbMusic = MusicApplication.db.selector(Music.class).where("id", "=", music.getId()).findFirst();
+			if (dbMusic != null) {
+				ToastTool.toastShort(getActivity(), "这首歌曲已经在下载列表中了");
+				return;
+			}
+		} catch (Exception e) {
+			ToastTool.toastShort(getActivity(), "这首歌曲已经在下载列表中了");
+			return;
+		}
+
+		music.setMp3Url(url);
+		music.setBitrate(bitrate);
+		String fileName = music.getName() + "-" + music.getSinger() + extension;
+		String uniFileName = FileTool.getUniqueFileName(Constants.PATH_CLASSIC_DOG, fileName, 1);
+		music.setFileName(uniFileName);// 文件名
+		// 文件路径
+		String realPath = music.getFilePath() + music.getFileName();
+		music.setFilePath(realPath);
+		try {
+			MusicApplication.db.save(music);
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+
+		downloadMusic(music);
 	}
 }

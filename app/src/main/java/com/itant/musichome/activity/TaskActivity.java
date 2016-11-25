@@ -18,7 +18,7 @@ import com.dinuscxj.progressbar.CircleProgressBar;
 import com.itant.musichome.MusicApplication;
 import com.itant.musichome.R;
 import com.itant.musichome.bean.Music;
-import com.itant.musichome.utils.ToastTools;
+import com.itant.musichome.utils.ToastTool;
 import com.umeng.analytics.MobclickAgent;
 import com.wuxiaolong.pullloadmorerecyclerview.PullLoadMoreRecyclerView;
 
@@ -142,13 +142,13 @@ public class TaskActivity extends BaseActivity {
                 public void onClick(View v) {
                     // 点击播放
                     if (music.getProgress() != 100) {
-                        ToastTools.toastShort(getApplicationContext(), "请等待歌曲下载完毕");
+                        ToastTool.toastShort(getApplicationContext(), "请等待歌曲下载完毕");
                         return;
                     }
 
                     File file = new File(music.getFilePath());
                     if (!file.exists()) {
-                        ToastTools.toastShort(getApplicationContext(), "该文件已丢失，请从列表中删除");
+                        ToastTool.toastShort(getApplicationContext(), "该文件已丢失，请从列表中删除");
                         return;
                     }
 
@@ -159,7 +159,7 @@ public class TaskActivity extends BaseActivity {
                         intent.setDataAndType(Uri.parse("file://" + music.getFilePath()), "audio/MP3");
                         startActivity(intent);
                     } catch (Exception e) {
-                        ToastTools.toastShort(getApplicationContext(), "找不到文件");
+                        ToastTool.toastShort(getApplicationContext(), "找不到文件");
                     }
                 }
             });
@@ -195,7 +195,7 @@ public class TaskActivity extends BaseActivity {
                                 e.printStackTrace();
                             }
 
-                            ToastTools.toastShort(getApplicationContext(), "删除成功");
+                            ToastTool.toastShort(getApplicationContext(), "删除成功");
 
                             // 刷新数据
                             getMusicFromDb();
@@ -222,7 +222,7 @@ public class TaskActivity extends BaseActivity {
                         intent.setDataAndType(Uri.parse("file://" + music.getFilePath()), "audio/MP3");
                         startActivity(intent);
                     } catch (Exception e) {
-                        ToastTools.toastShort(getApplicationContext(), "找不到文件");
+                        ToastTool.toastShort(getApplicationContext(), "找不到文件");
                     }
                 }
             });

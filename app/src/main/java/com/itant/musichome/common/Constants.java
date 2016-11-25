@@ -18,32 +18,62 @@ public class Constants {
     /**
      * 小狗下载地址
      */
-    public static String PATH_DOG;
+    public static String PATH_CLASSIC_DOG;
 
     /**
      * 凉窝下载地址
      */
-    public static String PATH_KWO;
+    public static String PATH_CLASSIC_KWO;
 
     /**
      * 企鹅下载地址
      */
-    public static String PATH_QIE;
+    public static String PATH_CLASSIC_QIE;
 
     /**
      * 白云下载地址
      */
-    public static String PATH_YUN;
+    public static String PATH_CLASSIC_YUN;
 
     /**
      * 熊掌下载地址
      */
-    public static String PATH_XIONG;
+    public static String PATH_CLASSIC_XIONG;
 
     /**
      * 龙虾下载地址
      */
-    public static String PATH_XIA;
+    public static String PATH_CLASSIC_XIA;
+
+    /**
+     * 小狗下载地址
+     */
+    public static String PATH_ADVANCED_DOG;
+
+    /**
+     * 凉窝下载地址
+     */
+    public static String PATH_ADVANCED_KWO;
+
+    /**
+     * 企鹅下载地址
+     */
+    public static String PATH_ADVANCED_QIE;
+
+    /**
+     * 白云下载地址
+     */
+    public static String PATH_ADVANCED_YUN;
+
+    /**
+     * 熊掌下载地址
+     */
+    public static String PATH_ADVANCED_XIONG;
+
+    /**
+     * 龙虾下载地址
+     */
+    public static String PATH_ADVANCED_XIA;
 
     public static Executor EXECUTOR_MUSIC = new PriorityExecutor(5, true);
 
@@ -55,9 +85,19 @@ public class Constants {
     public static final String EVENT_LOAD_COMPLETE = "load_finish";
 
     /**
+     * 停止加载动画（高级）
+     */
+    public static final String EVENT_LOAD_COMPLETE_AD = "load_finish_ad";
+
+    /**
      *  刷新搜索界面的音乐列表
      */
     public static final String EVENT_UPDATE_MUSICS = "update_music";
+
+    /**
+     *  刷新搜索界面的音乐列表（高级）
+     */
+    public static final String EVENT_UPDATE_MUSICS_AD = "update_music_ad";
 
 
     public static List<HttpCookie> COOKIE_CONTAINER;

@@ -1,4 +1,4 @@
-package com.itant.musichome.music;
+package com.itant.musichome.music.classic;
 
 import android.text.TextUtils;
 
@@ -8,8 +8,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.itant.musichome.MusicApplication;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
+import com.itant.musichome.utils.FileTool;
 import com.itant.musichome.utils.StringTool;
-import com.itant.musichome.utils.ToastTools;
+import com.itant.musichome.utils.ToastTool;
 
 import org.greenrobot.eventbus.EventBus;
 import org.xutils.common.Callback;
@@ -69,7 +70,7 @@ public class XiaMusic {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                ToastTools.toastShort(MusicApplication.applicationContext, "账号有误");
+                ToastTool.toastShort(MusicApplication.applicationContext, "账号有误");
             }
 
             @Override
@@ -98,7 +99,7 @@ public class XiaMusic {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                ToastTools.toastShort(MusicApplication.applicationContext, "不是VIP");
+                ToastTool.toastShort(MusicApplication.applicationContext, "不是VIP");
             }
 
             @Override
@@ -135,20 +136,25 @@ public class XiaMusic {
         x.http().get(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String html) {
-                //ToastTools.toastShort(MusicApplication.applicationContext, responseString);
+                //ToastTool.toastShort(MusicApplication.applicationContext, responseString);
                 if (TextUtils.isEmpty(html)) {
                     // 结束加载动画
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
 
                 // 这里获得了html代码
-                JSONArray listArray = JSON.parseArray(html);
+                JSONArray listArray = null;
+                try {
+                    listArray = JSON.parseArray(html);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 if (listArray == null || listArray.size() == 0) {
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
@@ -157,7 +163,7 @@ public class XiaMusic {
                     JSONObject idObj = JSON.parseObject(obj.toString());
                     if (idObj == null) {
                         EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                        ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                        ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                         continue;
                     }
 
@@ -174,7 +180,7 @@ public class XiaMusic {
                         if (TextUtils.isEmpty(result)) {
                             // 结束加载动画
                             EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                            ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                            ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                             return;
                         }
 
@@ -182,7 +188,7 @@ public class XiaMusic {
                         if (jsonObject == null) {
                             // 结束加载动画
                             EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                            ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                            ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                             return;
                         }
 
@@ -190,7 +196,7 @@ public class XiaMusic {
                         if (!status) {
                             // 结束加载动画
                             EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                            ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                            ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                             return;
                         }
 
@@ -198,7 +204,7 @@ public class XiaMusic {
                         if (dataObject == null) {
                             // 结束加载动画
                             EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                            ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                            ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                             return;
                         }
 
@@ -206,7 +212,7 @@ public class XiaMusic {
                         if (listArray == null) {
                             // 结束加载动画
                             EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                            ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                            ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                             return;
                         }
 
@@ -217,7 +223,7 @@ public class XiaMusic {
                                 if (info == null) {
                                     // 结束加载动画
                                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                                     return;
                                 }
 
@@ -233,11 +239,13 @@ public class XiaMusic {
                                 String format = ".mp3";
                                 music.setMp3Url(info.getString("location"));// 下载地址
 
-                                music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getSourceId() + format);// 文件名
+                                String fileName = music.getName() + "-" + music.getSinger() + format;
+                                String uniFileName = FileTool.getUniqueFileName(Constants.PATH_CLASSIC_XIA, fileName, 1);
+                                music.setFileName(uniFileName);// 文件名
 
 
                                 // 文件路径
-                                music.setFilePath(Constants.PATH_XIA + music.getFileName());
+                                music.setFilePath(Constants.PATH_CLASSIC_XIA + music.getFileName());
                                 musics.add(music);
                             }
 
@@ -247,7 +255,7 @@ public class XiaMusic {
 
                     @Override
                     public void onError(Throwable ex, boolean isOnCallback) {
-                        ToastTools.toastShort(MusicApplication.applicationContext, "获取歌曲列表出错");
+                        ToastTool.toastShort(MusicApplication.applicationContext, "获取歌曲列表出错");
                     }
 
                     @Override
@@ -264,7 +272,7 @@ public class XiaMusic {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                ToastTools.toastShort(MusicApplication.applicationContext, "获取歌曲列表出错");
+                ToastTool.toastShort(MusicApplication.applicationContext, "获取歌曲列表出错");
             }
 
             @Override
@@ -342,7 +350,7 @@ public class XiaMusic {
 
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有获取高音质的权限");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有获取高音质的权限");
                 }
 
                 @Override

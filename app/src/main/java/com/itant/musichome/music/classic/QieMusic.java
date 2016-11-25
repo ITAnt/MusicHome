@@ -1,4 +1,4 @@
-package com.itant.musichome.music;
+package com.itant.musichome.music.classic;
 
 import android.text.TextUtils;
 
@@ -8,7 +8,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.itant.musichome.MusicApplication;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
-import com.itant.musichome.utils.ToastTools;
+import com.itant.musichome.utils.FileTool;
+import com.itant.musichome.utils.ToastTool;
 
 import org.greenrobot.eventbus.EventBus;
 import org.xutils.common.Callback;
@@ -46,7 +47,7 @@ public class QieMusic {
                 if (TextUtils.isEmpty(result)) {
                     // 结束加载动画
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
@@ -54,7 +55,7 @@ public class QieMusic {
                 if (TextUtils.isEmpty(json)) {
                     // 结束加载动画
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
@@ -62,7 +63,7 @@ public class QieMusic {
                 if (jsonObject == null) {
                     // 结束加载动画
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
@@ -70,7 +71,7 @@ public class QieMusic {
                 if (dataObject == null) {
                     // 结束加载动画
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
@@ -78,7 +79,7 @@ public class QieMusic {
                 if (songObject == null) {
                     // 结束加载动画
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
@@ -86,7 +87,7 @@ public class QieMusic {
                 if (TextUtils.equals(totalNum, "0")) {
                     // 结束加载动画
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
@@ -94,7 +95,7 @@ public class QieMusic {
                 if (listArray == null) {
                     // 结束加载动画
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
@@ -136,7 +137,9 @@ public class QieMusic {
                         music.setAlbum("");// 专辑
                         music.setMp3Url(infos[infos.length-4]);// 下载地址
 
-                        music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getSourceId() + ".m4a");// 文件名
+                        String fileName = music.getName() + "-" + music.getSinger() + ".m4a";
+                        String uniFileName = FileTool.getUniqueFileName(Constants.PATH_CLASSIC_QIE, fileName, 1);
+                        music.setFileName(uniFileName);// 文件名
                     } else {
                         String[] infos = f.split("\\|");
                         if (infos == null) {
@@ -174,7 +177,10 @@ public class QieMusic {
                         }
 
                         String suffix = music.getMp3Url().substring(music.getMp3Url().lastIndexOf("."), music.getMp3Url().length());
-                        music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getSourceId() + suffix);// 文件名
+
+                        String fileName = music.getName() + "-" + music.getSinger() + suffix;
+                        String uniFileName = FileTool.getUniqueFileName(Constants.PATH_CLASSIC_QIE, fileName, 1);
+                        music.setFileName(uniFileName);// 文件名
 
                         // 音乐相册
                         try {
@@ -184,7 +190,7 @@ public class QieMusic {
                         }
                     }
 
-                    music.setFilePath(Constants.PATH_QIE + music.getFileName());
+                    music.setFilePath(Constants.PATH_CLASSIC_QIE + music.getFileName());
                     musics.add(music);
                 }
 
@@ -194,7 +200,7 @@ public class QieMusic {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                ToastTools.toastShort(MusicApplication.applicationContext, "未知错误");
+                ToastTool.toastShort(MusicApplication.applicationContext, "未知错误");
             }
 
             @Override

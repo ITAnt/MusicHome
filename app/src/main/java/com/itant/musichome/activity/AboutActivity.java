@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.itant.musichome.R;
 import com.itant.musichome.common.Constants;
-import com.itant.musichome.utils.ToastTools;
+import com.itant.musichome.utils.ToastTool;
 import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
@@ -37,7 +37,7 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
                 ClipData clipData = ClipData.newPlainText("qq_group", "484111083");
                 //clipboardManager.setText("484111083");
                 clipboardManager.setPrimaryClip(clipData);
-                ToastTools.toastShort(AboutActivity.this, "已将QQ群号复制到剪贴板");
+                ToastTool.toastShort(AboutActivity.this, "已将QQ群号复制到剪贴板");
                 MobclickAgent.onEvent(this, "QQ");// 统计QQ群复制次数
                 break;
             default:
@@ -75,7 +75,7 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
                     Bitmap tmpBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.money);
                     saveMyBitmap("money.png", tmpBitmap);
                     insertIntoAlbum("money.png");
-                    ToastTools.toastShort(getApplicationContext(), "图片保存成功");
+                    ToastTool.toastShort(getApplicationContext(), "图片保存成功");
                     MobclickAgent.onEvent(AboutActivity.this, "Money");// 统计保存图片次数
                 } catch (Exception e) {
                     e.printStackTrace();

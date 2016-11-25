@@ -1,4 +1,4 @@
-package com.itant.musichome.music;
+package com.itant.musichome.music.classic;
 
 import android.text.TextUtils;
 
@@ -8,8 +8,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.itant.musichome.MusicApplication;
 import com.itant.musichome.bean.Music;
 import com.itant.musichome.common.Constants;
+import com.itant.musichome.utils.FileTool;
 import com.itant.musichome.utils.SecureTool;
-import com.itant.musichome.utils.ToastTools;
+import com.itant.musichome.utils.ToastTool;
 
 import org.greenrobot.eventbus.EventBus;
 import org.xutils.common.Callback;
@@ -47,7 +48,7 @@ public class DogMusic {
                 if (TextUtils.isEmpty(result)) {
                     // 结束加载动画
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
                     return;
                 }
 
@@ -55,7 +56,7 @@ public class DogMusic {
                 if (TextUtils.isEmpty(json)) {
                     // 结束加载动画
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
 
                     return;
                 }
@@ -64,7 +65,7 @@ public class DogMusic {
                 if (jsonObject == null) {
                     // 结束加载动画
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
 
                     return;
                 }
@@ -73,7 +74,7 @@ public class DogMusic {
                 if (dataObject == null) {
                     // 结束加载动画
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
 
                     return;
                 }
@@ -82,7 +83,7 @@ public class DogMusic {
                 if (total <= 0) {
                     // 结束加载动画
                     EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
-                    ToastTools.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
+                    ToastTool.toastShort(MusicApplication.applicationContext, "没有找到相关的歌曲");
 
                     return;
                 }
@@ -109,7 +110,10 @@ public class DogMusic {
 
 
                     music.setBitrate(object.getString("bitrate"));// 音质
-                    music.setFileName(music.getName() + "-" + music.getSinger() + "-" + music.getSourceId() + ".mp3");// 文件名
+                    String fileName = music.getName() + "-" + music.getSinger() + ".mp3";
+
+                    String uniFileName = FileTool.getUniqueFileName(Constants.PATH_CLASSIC_DOG, fileName, 1);
+                    music.setFileName(uniFileName);// 文件名
 
                     String hash = object.getString("hash");
                     String hash320 = object.getString("320hash");
@@ -129,7 +133,7 @@ public class DogMusic {
                     music.setMp3Url("http://trackercdn.kugou.com/i/?key=" + key + "&cmd=4&acceptMp3=1&hash=" + hash + "&pid=1");// 下载地址
 
                     // 文件路径
-                    music.setFilePath(Constants.PATH_DOG + music.getFileName());
+                    music.setFilePath(Constants.PATH_CLASSIC_DOG + music.getFileName());
                     musics.add(music);
                 }
 
@@ -139,7 +143,7 @@ public class DogMusic {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                ToastTools.toastShort(MusicApplication.applicationContext, "未知错误");
+                ToastTool.toastShort(MusicApplication.applicationContext, "未知错误");
             }
 
             @Override

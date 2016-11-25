@@ -3,8 +3,12 @@ package com.itant.musichome.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.itant.musichome.R;
 import com.itant.musichome.adapter.FragmentAdapter;
 import com.itant.musichome.fragment.AdvancedFragment;
@@ -39,10 +44,65 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 	private RelativeLayout rl_about;
 	private RelativeLayout rl_task;
 
+	private static String[] REQUIRED_PERMISSIONS = {
+			Manifest.permission.READ_EXTERNAL_STORAGE,
+			Manifest.permission.WRITE_EXTERNAL_STORAGE
+	};
+
+	/**
+	 * 初始化权限
+	 */
+	private void initPermission() {
+		int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+		if (permission != PackageManager.PERMISSION_GRANTED) {
+			// We don't have permission so prompt the user
+			ActivityCompat.requestPermissions(
+					this,
+					REQUIRED_PERMISSIONS,
+					1
+			);
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		if (requestCode == 1) {
+			int grantResult = grantResults[0];
+			boolean granted = grantResult == PackageManager.PERMISSION_GRANTED;
+
+			if (!granted) {
+				MobclickAgent.onEvent(this, "Permission");// 统计权限拒绝次数
+
+				final AlertDialog dialog = new AlertDialog.Builder(this).create();
+				dialog.show();
+				dialog.setContentView(R.layout.dialog_permission);
+				dialog.setCancelable(false);
+				dialog.setCanceledOnTouchOutside(false);
+
+				BootstrapButton bb_confirm = (BootstrapButton) dialog.findViewById(R.id.bb_confirm);
+				bb_confirm.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						dialog.cancel();
+						// 退出
+						System.exit(0);
+					}
+				});
+			}
+		}
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+
+		// 申请6.0的权限，如果拒绝了，则退出应用
+		if (android.os.Build.VERSION.SDK_INT >= 23) {
+			initPermission();
+		}
 
 		inflate = LayoutInflater.from(this);
 		rl_about = (RelativeLayout) findViewById(R.id.rl_about);
@@ -61,7 +121,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
 		Indicator fiv_first_fragment = (Indicator) findViewById(R.id.fiv_first_fragment);
 		fiv_first_fragment.setScrollBar(new LayoutBar(this, R.layout.layout_slide_bar, ScrollBar.Gravity.BOTTOM_FLOAT));
-
 		float unSelectSize = UITool.dpToPx(this, 5);
 		float selectSize = unSelectSize * 1.05f;
 
@@ -87,6 +146,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 				}
 			}
 		});
+
+		TextView tv_classic = (TextView) findViewById(R.id.tv_classic);
+		tv_classic.setOnClickListener(this);
+		TextView tv_advanced = (TextView) findViewById(R.id.tv_advanced);
+		tv_advanced.setOnClickListener(this);
 	}
 
 	@Override
@@ -113,12 +177,17 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 				ActivityTool.startActivity(this, new Intent(this, TaskActivity.class));
 				break;
 
+			case R.id.tv_classic:
+				indicatorViewPager.setCurrentItem(0, true);
+				break;
+
+			case R.id.tv_advanced:
+				indicatorViewPager.setCurrentItem(1, true);
+				break;
+
 			default:
 				break;
 		}
-
-
-
 	}
 
 	String[] topTabTitles = {"", ""};
