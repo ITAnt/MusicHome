@@ -201,6 +201,7 @@ public class XiongMusic {
             EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
             // 更新搜索结果
             EventBus.getDefault().post(Constants.EVENT_UPDATE_MUSICS);
+            index = 0;
         }
     }
 }

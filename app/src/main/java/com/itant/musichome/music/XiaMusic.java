@@ -365,6 +365,7 @@ public class XiaMusic {
             EventBus.getDefault().post(Constants.EVENT_UPDATE_MUSICS);
             // 结束加载动画
             EventBus.getDefault().post(Constants.EVENT_LOAD_COMPLETE);
+            i = 0;
         }
     }
 }
