@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -66,6 +67,7 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 
 	private InputMethodManager inputMethodManager;
 	private AlertDialog loadingDialog;
+	private String parent;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -73,6 +75,7 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 
 		// 初始化文件夹目录
 		initDirectory();
+		parent = Constants.PATH_ADVANCED_DOG;
 
 		inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		//Constants.MUSIC_TASKS = new HashMap<>();
@@ -266,7 +269,7 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 		}
 	}
 
-	private String parent = Constants.PATH_ADVANCED_YUN;
+
 	@Override
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
 		switch (checkedId) {
@@ -417,6 +420,7 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 	private void chooseBitRate(final Music music) {
 
 		final AlertDialog dialog = new AlertDialog.Builder(getActivity()).create();
+		dialog.getWindow().setBackgroundDrawable(new ColorDrawable());
 		dialog.show();
 		dialog.setContentView(R.layout.dialog_bitrate);
 		dialog.setCancelable(false);
@@ -519,7 +523,32 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 		music.setMp3Url(url);
 		music.setBitrate(bitrate);
 		String fileName = music.getName() + "-" + music.getSinger() + extension;
-		String uniFileName = FileTool.getUniqueFileName(Constants.PATH_CLASSIC_DOG, fileName, 1);
+
+		String uniFileName = null;
+		switch (music.getMusicType()) {
+			case 0:
+				uniFileName = FileTool.getUniqueFileName(Constants.PATH_ADVANCED_DOG, fileName, 1);
+				break;
+			case 1:
+				uniFileName = FileTool.getUniqueFileName(Constants.PATH_ADVANCED_KWO, fileName, 1);
+				break;
+			case 2:
+				uniFileName = FileTool.getUniqueFileName(Constants.PATH_ADVANCED_QIE, fileName, 1);
+				break;
+			case 3:
+				uniFileName = FileTool.getUniqueFileName(Constants.PATH_ADVANCED_YUN, fileName, 1);
+				break;
+			case 4:
+				uniFileName = FileTool.getUniqueFileName(Constants.PATH_ADVANCED_XIONG, fileName, 1);
+				break;
+			case 5:
+				uniFileName = FileTool.getUniqueFileName(Constants.PATH_ADVANCED_XIA, fileName, 1);
+				break;
+			default:
+				uniFileName = FileTool.getUniqueFileName(Constants.PATH_ADVANCED_DOG, fileName, 1);
+				break;
+		}
+
 		music.setFileName(uniFileName);// 文件名
 		// 文件路径
 		String realPath = music.getFilePath() + music.getFileName();
