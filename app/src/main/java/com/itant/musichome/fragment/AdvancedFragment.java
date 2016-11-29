@@ -341,7 +341,7 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 
 			@Override
 			public void onSuccess(File result) {
-				ToastTool.toastShort(getActivity(), music.getName() + "下载成功");
+				ToastTool.toastShort(MusicApplication.applicationContext, music.getName() + "下载成功");
 				music.setProgress(100);
 				try {
 					MusicApplication.db.update(music, "progress");
