@@ -445,7 +445,10 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 
 			@Override
 			public void onSuccess(File result) {
-				ToastTool.toastShort(getActivity(), music.getName() + "下载成功");
+				if (MusicApplication.applicationContext != null) {
+					ToastTool.toastShort(getActivity(), music.getName() + "下载成功");
+				}
+
 				music.setProgress(100);
 				try {
 					MusicApplication.db.update(music, "progress");
