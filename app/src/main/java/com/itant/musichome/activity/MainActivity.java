@@ -112,8 +112,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
 		ssvp = (ViewPager) findViewById(R.id.ssvp);
 		mFragments = new ArrayList<>();
-		mFragments.add(new ClassicFragment());
 		mFragments.add(new AdvancedFragment());
+		mFragments.add(new ClassicFragment());
+
 		mAdapter = new FragmentAdapter(getSupportFragmentManager(), mFragments);
 		ssvp.setAdapter(mAdapter);
 		ssvp.setOffscreenPageLimit(2);
@@ -177,11 +178,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 				ActivityTool.startActivity(this, new Intent(this, TaskActivity.class));
 				break;
 
-			case R.id.tv_classic:
+			case R.id.tv_advanced:
 				indicatorViewPager.setCurrentItem(0, true);
 				break;
 
-			case R.id.tv_advanced:
+			case R.id.tv_classic:
 				indicatorViewPager.setCurrentItem(1, true);
 				break;
 
