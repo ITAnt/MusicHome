@@ -26,6 +26,7 @@ import org.xutils.ex.DbException;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -75,6 +76,7 @@ public class TaskActivity extends BaseActivity {
             }
             musics.clear();
             musics.addAll(dbMusics);
+            Collections.reverse(musics);
             mRecyclerViewAdapter.notifyDataSetChanged();
 
         } catch (Throwable e) {
