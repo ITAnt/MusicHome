@@ -475,7 +475,7 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 		}
 
 		LinearLayout ll_hq = (LinearLayout) dialog.findViewById(R.id.ll_hq);
-		if (!TextUtils.isEmpty(music.getSqUrl())) {
+		if (!TextUtils.isEmpty(music.getHqUrl())) {
 			ll_hq.setVisibility(View.VISIBLE);
 			ll_hq.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -489,7 +489,7 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 		}
 
 		LinearLayout ll_lq = (LinearLayout) dialog.findViewById(R.id.ll_lq);
-		if (!TextUtils.isEmpty(music.getSqUrl())) {
+		if (!TextUtils.isEmpty(music.getLqUrl())) {
 			ll_lq.setVisibility(View.VISIBLE);
 			ll_lq.setOnClickListener(new View.OnClickListener() {
 				@Override
