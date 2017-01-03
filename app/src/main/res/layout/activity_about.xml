@@ -45,7 +45,7 @@
                 android:clickable="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="1.程序还在测试中，请尽量下载完一首歌曲之后再进行下载。\r\n\r\n2.无论是WiFi还是流量环境下都会进行下载，下载之前请注意您的流量情况。\r\n\r\n3.更多资讯，欢迎到我的微博留言，我的微博是：竹翎子歌。QQ交流群：484111083。\r\n\r\n4.在下载列表界面下拉可以更新并查看下载进度。\r\n\r\n5.歌曲均来源于开源社区，如若用于非法商业活动，本人概不负责。\r\n\r\n6.如果经济允许的话，欢迎赞助我们，您的支持，是我们不断进步的巨大动力。"
+                android:text="1.程序还在测试中，请尽量下载完一首歌曲之后再进行下载。\r\n\r\n2.无论是WiFi还是流量环境下都会进行下载，下载之前请注意您的流量情况。\r\n\r\n3.更多资讯，欢迎到我的微博留言，我的微博是：竹翎子歌。QQ交流群：484111083。\r\n\r\n4.在下载列表界面下拉可以更新并查看下载进度。\r\n\r\n5.歌曲均来源于开源社区，如若用于非法商业活动，本人概不负责。\r\n\r\n6.如果经济允许的话，欢迎赞助我们，您的支持，是我们不断进步的巨大动力。\r\n\r\n7.音乐文件保存在根目录的MusicHome文件夹下，大家可以自由查看删除，工作比较繁忙，我来不及弄了。"
                 android:textColor="@color/gray"
                 android:textSize="13sp"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"/>
