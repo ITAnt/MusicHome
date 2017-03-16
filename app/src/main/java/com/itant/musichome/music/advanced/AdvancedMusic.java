@@ -36,7 +36,7 @@ public class AdvancedMusic {
     }
 
     /**
-     * 获取小狗歌曲信息
+     * 获取高级歌曲信息
      * @param type 0小狗 1凉窝 2企鹅 3白云 4熊掌 5龙虾
      */
     public void getAdvancedSongs(final List<Music> musics, final String parent, final int type, final String engine, int page, String keyWords) throws Exception {

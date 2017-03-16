@@ -5,9 +5,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white">
 
+    <!--<TextView
+        android:id="@+id/tv_words"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:textColor="@color/gray"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:textSize="11sp"/>-->
 
-
-    <!--<com.jetradarmobile.snowfall.SnowfallView
+    <com.jetradarmobile.snowfall.SnowfallView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:snowflakesNum="250"
@@ -17,13 +26,9 @@
         app:snowflakeSizeMin="8dp"
         app:snowflakeSizeMax="30dp"
         app:snowflakeSpeedMin="2"
-        app:snowflakeSpeedMax="10"
+        app:snowflakeSpeedMax="18"
         app:snowflakesFadingEnabled="true"
-        app:snowflakeImage="@mipmap/ice_gray"/>-->
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        app:snowflakeImage="@mipmap/ice_gray"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,17 +36,6 @@
             android:orientation="vertical"
             android:padding="@dimen/activity_horizontal_margin"
             android:layout_centerInParent="true">
-
-            <TextView
-                android:id="@+id/tv_words"
-                android:layout_width="match_parent"
-                android:gravity="center"
-                android:layout_height="wrap_content"
-                android:textColor="@color/gray"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:textSize="11sp"/>
 
 
             <ImageView
@@ -60,16 +54,13 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
-                android:text="音乐之家"
-                android:textSize="10sp"/>
+                android:text="音乐之家"/>
 
-            <TextView
-                android:id="@+id/tv_notice"
-                android:layout_width="match_parent"
+            <!--<TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="热爱生活，分享歌声"
+                android:text="我不喜欢流浪，却随风飘扬，我脚踏莲香，追逐那渺茫的歌声，却不得不止步于这断壁残垣，我时常在想，这个世界上，还有没有和我一样忧郁的人呢，还有没有和我一样喜欢音乐、分享音乐的人呢？"
                 android:textSize="11sp"
-                android:gravity="center"
                 android:textColor="@color/colorPrimary"
                 android:layout_marginBottom="@dimen/activity_vertical_margin" />
 
@@ -98,7 +89,6 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:text="长按可以保存"
-                android:textColor="@color/gray" />
+                android:textColor="@color/gray" />-->
         </LinearLayout>
-    </ScrollView>
 </RelativeLayout>

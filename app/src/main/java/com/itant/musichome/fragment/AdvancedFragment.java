@@ -68,11 +68,13 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 	private InputMethodManager inputMethodManager;
 	private AlertDialog loadingDialog;
 	private String parent;
+	private Context mContext;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_main, container, false);
 
+		mContext = getActivity().getApplicationContext();
 		// 初始化文件夹目录
 		initDirectory();
 		parent = Constants.PATH_ADVANCED_DOG;
@@ -385,9 +387,11 @@ public class AdvancedFragment extends Fragment implements View.OnClickListener, 
 				music.setProgress(progress);
 				try {
 					MusicApplication.db.update(music, "progress");
+					mContext.sendBroadcast(new Intent("progress"));
 				} catch (DbException e) {
 					e.printStackTrace();
 				}
+
 			}
 		});
 	}

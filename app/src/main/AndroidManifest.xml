@@ -16,12 +16,19 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/MusicTheme">
+
+        <activity
+            android:name=".activity.WelcomeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoBlankTheme">
+
+        </activity>
+
         <activity android:name=".activity.MainActivity"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -15,4 +15,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!--启动不留空白瞬间-->
+    <style name="NoBlankTheme" parent="android:Theme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
 </resources>

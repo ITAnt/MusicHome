@@ -25,6 +25,7 @@ import com.itant.musichome.adapter.FragmentAdapter;
 import com.itant.musichome.fragment.AdvancedFragment;
 import com.itant.musichome.fragment.ClassicFragment;
 import com.itant.musichome.utils.ActivityTool;
+import com.itant.musichome.utils.ToastTool;
 import com.itant.musichome.utils.UITool;
 import com.shizhefei.view.indicator.Indicator;
 import com.shizhefei.view.indicator.IndicatorViewPager;
@@ -32,6 +33,8 @@ import com.shizhefei.view.indicator.slidebar.LayoutBar;
 import com.shizhefei.view.indicator.slidebar.ScrollBar;
 import com.shizhefei.view.indicator.transition.OnTransitionTextListener;
 import com.umeng.analytics.MobclickAgent;
+
+import cn.bmob.v3.Bmob;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
 	private ViewPager ssvp;
@@ -98,6 +101,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		Bmob.initialize(this, "cea208bb8e740d0301742e69a8bd9233");
 
 		// 申请6.0的权限，如果拒绝了，则退出应用
 		if (android.os.Build.VERSION.SDK_INT >= 23) {
@@ -154,10 +158,18 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 		tv_advanced.setOnClickListener(this);
 	}
 
+	private long lastClickedTime;
 	@Override
 	public void onBackPressed() {
-		super.onBackPressed();
-		moveTaskToBack(true);// true对任何Activity都适用
+
+
+		if (System.currentTimeMillis() - lastClickedTime > 3000) {
+			lastClickedTime = System.currentTimeMillis();
+			ToastTool.toastShort(this, "再按一次就要退出啦");
+		} else {
+			super.onBackPressed();
+		}
+		//moveTaskToBack(true);// true对任何Activity都适用
         /*Intent mHomeIntent = new Intent(Intent.ACTION_MAIN, null);
         mHomeIntent.addCategory(Intent.CATEGORY_HOME);
         mHomeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);

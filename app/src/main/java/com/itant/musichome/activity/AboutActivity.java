@@ -10,11 +10,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.itant.musichome.R;
+import com.itant.musichome.bean.Words;
 import com.itant.musichome.common.Constants;
 import com.itant.musichome.utils.ToastTool;
 import com.umeng.analytics.MobclickAgent;
@@ -23,12 +25,20 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
+
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.listener.GetListener;
 
 /**
  * Created by Jason on 2016/11/13.
  */
 public class AboutActivity extends BaseActivity implements View.OnClickListener {
     private ClipboardManager clipboardManager;
+    private TextView tv_words;
+    private TextView tv_notice;
+    private String[] words = {"时光清浅，愿岁月待你温柔如初。", "愿有岁月可回首，且以深情共白头。", "在有生的瞬间能遇到你，竟花光所有运气。", "白驹过隙，惟愿音乐常伴你。"};
 
     @Override
     public void onClick(View v) {
@@ -40,6 +50,9 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
                 ToastTool.toastShort(AboutActivity.this, "已将QQ群号复制到剪贴板");
                 MobclickAgent.onEvent(this, "QQ");// 统计QQ群复制次数
                 break;
+            case R.id.iv_logo:
+                ToastTool.toastShort(this, "哈哈，被你发现了");
+                break;
             default:
                 break;
         }
@@ -50,6 +63,16 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         setTitleBar("关于");
         setBackable(true);
+
+        Random random = new Random();
+        int index = random.nextInt(4);
+        tv_words = (TextView) findViewById(R.id.tv_words);
+        tv_words.setText(words[index]);
+
+        tv_notice = (TextView) findViewById(R.id.tv_notice);
+
+        ImageView iv_logo = (ImageView) findViewById(R.id.iv_logo);
+        iv_logo.setOnClickListener(this);
 
         clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         TextView tv_qq_qun = (TextView) findViewById(R.id.tv_qq_qun);
@@ -84,6 +107,46 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
             }
         });
 
+        BmobQuery<Words> query = new BmobQuery<Words>();
+        query.getObject(this, "RbuU333P", new GetListener<Words>() {
+
+            @Override
+            public void onSuccess(Words object) {
+                // TODO Auto-generated method stub
+                //一句话
+                String words = object.getWords();
+                if (!TextUtils.isEmpty(words)) {
+                    tv_words.setText(words);
+                }
+
+                String version = object.getVersion();
+                if (!TextUtils.isEmpty(version)) {
+                    try {
+                        int versionInt = Integer.parseInt(version);
+                        int currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+                        if (versionInt > currentVersion) {
+                            String notice = object.getNotice();
+                            if (!TextUtils.isEmpty(notice)) {
+                                tv_notice.setText(notice);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                //获得数据的objectId信息
+                object.getObjectId();
+                //获得createdAt数据创建时间（注意是：createdAt，不是createAt）
+                //object.getCreatedAt();
+            }
+
+            @Override
+            public void onFailure(int code, String arg0) {
+                // TODO Auto-generated method stub
+                //ToastTool.toastShort(AboutActivity.this, arg0);
+            }
+        });
     }
 
     /**

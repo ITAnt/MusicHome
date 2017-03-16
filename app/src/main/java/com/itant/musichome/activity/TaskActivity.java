@@ -1,11 +1,17 @@
 package com.itant.musichome.activity;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,9 +43,26 @@ public class TaskActivity extends BaseActivity {
     private RecyclerViewAdapter mRecyclerViewAdapter;
     private List<Music> musics;
 
+    private class ProgressReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (TextUtils.equals(action, "progress")) {
+                getMusicFromDb();
+            }
+        }
+    }
+
+    private  ProgressReceiver mReceiver;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mReceiver = new ProgressReceiver();
+        IntentFilter intentFilter = new IntentFilter("progress");
+        registerReceiver(mReceiver, intentFilter);
+
         setTitleBar("任务");
         setBackable(true);
 
@@ -48,11 +71,11 @@ public class TaskActivity extends BaseActivity {
         mRecyclerViewAdapter = new RecyclerViewAdapter(musics);
 
         pmrv_task.setLinearLayout();
-        pmrv_task.setPullRefreshEnable(true);// 不需要下拉刷新
+        pmrv_task.setPullRefreshEnable(false);// 不需要下拉刷新
         pmrv_task.setPushRefreshEnable(false);// 不需要上拉刷新
         pmrv_task.setFooterViewText("正在刷新");
         pmrv_task.setAdapter(mRecyclerViewAdapter);
-        pmrv_task.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
+        /*pmrv_task.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
             @Override
             public void onRefresh() {
                 MobclickAgent.onEvent(TaskActivity.this, "Refresh");// 统计刷新次数
@@ -63,7 +86,7 @@ public class TaskActivity extends BaseActivity {
             public void onLoadMore() {
 
             }
-        });
+        });*/
         getMusicFromDb();
     }
 
@@ -261,5 +284,12 @@ public class TaskActivity extends BaseActivity {
                 tv_from = (TextView) itemView.findViewById(R.id.tv_from);
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        unregisterReceiver(mReceiver);
     }
 }

@@ -40,7 +40,7 @@
                 android:layout_marginLeft="10dp"
                 android:minWidth="80dp"
                 android:text="搜索"
-                app:bootstrapBrand="success"
+                app:bootstrapBrand="warning"
                 app:bootstrapSize="sm"
                 app:buttonMode="regular"
                 app:roundedCorners="true"

@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#4caf50</color>
-    <color name="colorPrimaryDark">#2b9646</color>
-    <color name="colorAccent">#4caf50</color>
+    <color name="colorPrimary">#f67e6a</color>
+    <!--<color name="colorPrimary">#4caf50</color>-->
+    <color name="colorPrimaryDark">#f4655f</color>
+    <!--<color name="colorPrimaryDark">#2b9646</color>-->
+    <color name="colorAccent">#f67e6a</color>
+    <!--<color name="colorAccent">#4caf50</color>-->
     <color name="white">#FFFFFF</color>
     <color name="gray">#a9a9a9</color>
     <color name="gray_transparent">#88a9a9a9</color>
 
-    <color name="holo_blue">#FF33E5B5</color>
+    <color name="holo_blue">#f2dedf</color>
+    <!--<color name="holo_blue">#FF33E5B5</color>-->
     <color name="bg_btn">#ec971f</color>
 </resources>

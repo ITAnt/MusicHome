@@ -3,6 +3,7 @@ package com.itant.musichome.fragment;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -63,9 +64,13 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 	private InputMethodManager inputMethodManager;
 	private AlertDialog loadingDialog;
 
+	private Context mContext;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_main, container, false);
+
+		mContext = getActivity().getApplicationContext();
 
 		// 初始化文件夹目录
 		initDirectory();
@@ -489,6 +494,7 @@ public class ClassicFragment extends Fragment implements View.OnClickListener, A
 				music.setProgress(progress);
 				try {
 					MusicApplication.db.update(music, "progress");
+					mContext.sendBroadcast(new Intent("progress"));
 				} catch (DbException e) {
 					e.printStackTrace();
 				}
